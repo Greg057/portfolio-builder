@@ -1,4 +1,5 @@
-import { Suspense } from 'react'
+
+import { Suspense } from 'react';
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -22,20 +23,20 @@ export default function OnboardingPage() {
 }
 
 function GitHubConnect() {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Connect GitHub</CardTitle>
-        <CardDescription>Link your GitHub account to import your projects</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Button className="w-full">
-          <GitHubLogoIcon className="mr-2 h-4 w-4" />
-          Connect GitHub Account
-        </Button>
-      </CardContent>
-    </Card>
-  )
+    return (
+        <Card>
+        <CardHeader>
+            <CardTitle>Connect GitHub</CardTitle>
+            <CardDescription>Link your GitHub account to import your projects</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <Button className="w-full">
+            <GitHubLogoIcon className="mr-2 h-4 w-4" />
+            Connect GitHub Account
+            </Button>
+        </CardContent>
+        </Card>
+    );
 }
 
 function CVUploadOrManualEntry() {
