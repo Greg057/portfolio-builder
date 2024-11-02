@@ -1,8 +1,8 @@
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import Header from "@/components/header";
+import Footer from "@/components/footer";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -10,8 +10,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "Portfolio Buiilder",
+  description: "The fastest way to create your developer portfolio",
 };
 
 export default function RootLayout({
@@ -32,9 +32,7 @@ export default function RootLayout({
             <div className="flex-1 w-full flex flex-col items-center">
               <Header />
               {children}
-              <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-                <ThemeSwitcher />
-              </footer>
+              <Footer />
             </div>
           </main>
         </ThemeProvider>
