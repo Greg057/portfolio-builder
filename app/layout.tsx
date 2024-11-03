@@ -1,8 +1,6 @@
 import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -28,13 +26,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="min-h-screen flex flex-col items-center">
-            <div className="flex-1 w-full flex flex-col items-center">
-              <Header />
-              {children}
-              <Footer />
-            </div>
-          </main>
+          {children}   
         </ThemeProvider>
       </body>
     </html>
