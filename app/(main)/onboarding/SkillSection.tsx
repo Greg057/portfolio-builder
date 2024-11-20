@@ -30,13 +30,13 @@ export default function SkillsSection({
           <CardDescription>List your key technical skills</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Label>Skill</Label>
           {skills.map((skill, index) => (
             <div key={index} className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Input
                   className="flex-1"
                   placeholder="e.g., JavaScript"
+                  required
                   value={skill.name || ""}
                   onChange={(e) =>
                     setSkills(

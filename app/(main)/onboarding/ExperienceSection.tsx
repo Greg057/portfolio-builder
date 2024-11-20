@@ -39,6 +39,7 @@ export default function ExperienceSection({
                 <Label>Company</Label>
                 <Input
                   placeholder="e.g., Tech Innovators Inc."
+                  required
                   value={exp.company}
                   onChange={(e) =>
                     setExperiences(
@@ -53,6 +54,7 @@ export default function ExperienceSection({
                 <Label>Position</Label>
                 <Input
                   placeholder="e.g., Full Stack Developer"
+                  required
                   value={exp.position}
                   onChange={(e) =>
                     setExperiences(
@@ -68,6 +70,7 @@ export default function ExperienceSection({
                   <Label>Start Date</Label>
                   <Input
                     placeholder="e.g., January 2023"
+                    required
                     value={exp.start_date}
                     onChange={(e) =>
                       setExperiences(

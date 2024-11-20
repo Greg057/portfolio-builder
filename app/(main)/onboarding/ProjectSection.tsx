@@ -38,6 +38,7 @@ export default function ProjectSection({
                   <Label>Name</Label>
                   <Input
                     placeholder="Project Name"
+                    required
                     value={proj.name || ""}
                     onChange={(e) =>
                       setProjects(

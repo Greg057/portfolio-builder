@@ -34,6 +34,7 @@ export default function EducationSection({
                 <Label>Degree</Label>
                 <Input
                   placeholder="e.g., Bachelor of Science in Computer Science"
+                  required
                   value={edu.degree}
                   onChange={(e) =>
                     setEducations(
@@ -48,6 +49,7 @@ export default function EducationSection({
                 <Label>University</Label>
                 <Input
                   placeholder="e.g., University of Technology"
+                  required
                   value={edu.university}
                   onChange={(e) =>
                     setEducations(
@@ -63,6 +65,7 @@ export default function EducationSection({
                   <Label>Start Year</Label>
                   <Input
                     placeholder="e.g., 2018"
+                    required
                     value={edu.start_year}
                     onChange={(e) =>
                       setEducations(
