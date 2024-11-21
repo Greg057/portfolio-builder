@@ -47,6 +47,7 @@ export default function SkillsSection({
                   }
                 />
                 <Button
+                  type='button'
                   variant="destructive"
                   onClick={() => removeSkill(index)}
                   size="sm"

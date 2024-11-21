@@ -102,6 +102,7 @@ export default function ProjectSection({
                 />
               </div>
               <Button
+                type='button'
                 variant="destructive"
                 onClick={() => removeProject(index)}
                 className="mt-2"

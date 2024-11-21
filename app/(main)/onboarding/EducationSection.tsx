@@ -106,6 +106,7 @@ export default function EducationSection({
                 />
               </div>
               <Button
+                type='button'
                 variant="destructive"
                 onClick={() => removeEducation(index)}
                 className="mt-2"

@@ -8,6 +8,7 @@ import UserInfoSection from './UserInfoSection'
 import ExperienceSection from './ExperienceSection'
 import ProjectSection from './ProjectSection'
 import SkillsSection from './SkillSection'
+import { createClient } from '@/utils/supabase/client'
 
 export default function OnboardingPage() {
   const [userInfo, setUserInfo] = useState<UserInfo>({
@@ -35,7 +36,6 @@ export default function OnboardingPage() {
       return;
     }
   
-    // Filter out empty optional sections
     const payload = {
       userInfo: {
         full_name: userInfo.full_name.trim(),
@@ -72,35 +72,80 @@ export default function OnboardingPage() {
           description: exp.description?.trim() || null,
         })),
       projects: projects
-        .filter((proj) => proj.name.trim()) // Only `name` is required
+        .filter((proj) => proj.name.trim())
         .map((proj) => ({
           ...proj,
           name: proj.name.trim(),
-          description: proj.description?.trim() || null, // Optional field
-          github_link: proj.github_link?.trim() || null, // Optional field
+          description: proj.description?.trim() || null,
+          github_link: proj.github_link?.trim() || null,
           technologies:
             proj.technologies.length > 0
-              ? proj.technologies.map((tech) => tech.trim()).filter(Boolean) // Clean non-empty techs
-              : null, // Set to null if empty
+              ? proj.technologies.map((tech) => tech.trim()).filter(Boolean)
+              : null, 
         })),
       skills: skills.length > 0
         ? [
             ...skills
-              .filter((skill) => skill.name.trim()) // Ensure at least one skill is non-empty
-              .map((skill) => skill.name.trim()), // Only keep skill names
+              .filter((skill) => skill.name.trim()) 
+              .map((skill) => skill.name.trim()), 
           ]
-        : null, // Set to null if no valid skills
+        : null,
     };
-    
   
     try {
-      // Send payload to Supabase
-      console.log("Submitting data:", payload);
-      // Replace with your Supabase API calls
-      alert("Profile saved successfully!");
+      const supabase = createClient();
+      const { data: userInfoData, error: userInfoError } = await supabase
+        .from('user_info')
+        .insert(payload.userInfo)
+        .select(); // Returns the inserted row
+  
+      if (userInfoError) throw userInfoError;
+  
+      const userId = userInfoData[0].id;
+  
+      // Insert related data using the `user_id` from `user_info`
+      if (payload.educations.length > 0) {
+        const { error: educationError } = await supabase
+          .from('education')
+          .insert(
+            payload.educations.map((edu) => ({ ...edu, user_id: userId }))
+          );
+  
+        if (educationError) throw educationError;
+      }
+  
+      if (payload.experiences.length > 0) {
+        const { error: experienceError } = await supabase
+          .from('work_experience')
+          .insert(
+            payload.experiences.map((exp) => ({ ...exp, user_id: userId }))
+          );
+  
+        if (experienceError) throw experienceError;
+      }
+  
+      if (payload.projects.length > 0) {
+        const { error: projectError } = await supabase
+          .from('projects')
+          .insert(
+            payload.projects.map((proj) => ({ ...proj, user_id: userId }))
+          );
+  
+        if (projectError) throw projectError;
+      }
+  
+      if (payload.skills) {
+        const { error: skillsError } = await supabase
+          .from('skills')
+          .insert({ skill_list: payload.skills, user_id: userId });
+  
+        if (skillsError) throw skillsError;
+      }
+  
+      alert('Profile saved successfully!');
     } catch (error) {
-      console.error("Error submitting profile:", error);
-      alert("Failed to save profile. Please try again.");
+      console.error('Error submitting profile:', error);
+      alert('Failed to save profile. Please try again.');
     }
   };
   
@@ -108,11 +153,9 @@ export default function OnboardingPage() {
   const validateForm = () => {
     const errors: string[] = [];
   
-    // Validate userInfo
     if (!userInfo.full_name.trim()) errors.push("Full name is required.");
     if (!userInfo.email.trim()) errors.push("Email is required.");
   
-    // Validate Educations
     const invalidEducations = educations.some(
       (edu) => 
         !edu.degree.trim() || 
@@ -121,7 +164,6 @@ export default function OnboardingPage() {
     );
     if (invalidEducations) errors.push("Each education entry must have a degree, university, and start year.");
   
-    // Validate Work Experiences
     const invalidExperiences = experiences.some(
       (exp) => 
         !exp.company.trim() || 
@@ -130,13 +172,11 @@ export default function OnboardingPage() {
     );
     if (invalidExperiences) errors.push("Each work experience entry must have a company, job title, and start date.");
   
-    // Validate Projects
     const invalidProjects = projects.some(
       (proj) => 
-        !proj.name.trim() || 
-        !proj.description.trim()
+        !proj.name.trim()
     );
-    if (invalidProjects) errors.push("Each project must have a name and description.");
+    if (invalidProjects) errors.push("Each project must have a name.");
   
     return errors;
   };  

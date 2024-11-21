@@ -111,6 +111,7 @@ export default function ExperienceSection({
                 />
               </div>
               <Button
+                type='button'
                 variant="destructive"
                 onClick={() => removeExperience(index)}
                 className="mt-2"
