@@ -94,6 +94,12 @@ export default function OnboardingPage() {
   
     try {
       const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      
+
       const { data: userInfoData, error: userInfoError } = await supabase
         .from('user_info')
         .insert(payload.userInfo)

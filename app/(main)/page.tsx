@@ -1,5 +1,84 @@
-export default async function Index() {
+'use client'
+
+import { useState } from 'react'
+import { motion } from "framer-motion"
+import Link from 'next/link';
+import { ArrowRight, Code2, Palette, Rocket, CheckCircle } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+
+export default function Home() {
+  const [hoveredFeature, setHoveredFeature] = useState<number | null>(null)
+
+  const features = [
+    { icon: Code2, title: "Interactive Editor", description: "Real-time updates with a split view of input fields and live portfolio preview" },
+    { icon: Palette, title: "Customizable UI", description: "Select from various UI styles for each section to create your unique portfolio" },
+    { icon: Rocket, title: "One-Click Deploy", description: "Deploy your portfolio with a single click and get a unique URL instantly" },
+    { icon: CheckCircle, title: "Developer Focused", description: "Pre-built components optimized for showcasing technical achievements" },
+  ]
+
   return (
-    <h1>main page.tsx</h1>
-  );
+    <div className="container mx-auto px-4 py-16 relative z-10">
+      <div className="max-w-5xl mx-auto text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text">
+            Craft Your Developer Portfolio in Minutes
+          </h1>
+        </motion.div>
+        
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-xl md:text-2xl text-muted-foreground mb-12"
+        >
+          Showcase your skills, projects, and experience with a professional portfolio. 
+          Built by developers, for developers.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mb-16"
+        >
+          <Link href="/onboarding">
+            <Button
+              size="lg"
+              className="text-lg h-14 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 bg-primary hover:bg-primary/90"
+            >
+              Create Your Portfolio
+              <ArrowRight className="ml-2" />
+            </Button>
+          </Link>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          className="grid md:grid-cols-2 gap-8 text-left"
+        >
+          {features.map((feature, index) => (
+            <Card 
+              key={index}
+              className="p-6 bg-background/50 backdrop-blur-sm border-primary/10 transition-all duration-300 hover:shadow-lg"
+              onMouseEnter={() => setHoveredFeature(index)}
+              onMouseLeave={() => setHoveredFeature(null)}
+            >
+              <CardContent className="p-0">
+                <feature.icon className={`w-12 h-12 mb-4 ${hoveredFeature === index ? 'text-primary' : 'text-muted-foreground'} transition-colors duration-300`} />
+                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                <p className="text-muted-foreground">{feature.description}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </motion.div>
+      </div>
+    </div>
+  )
 }
