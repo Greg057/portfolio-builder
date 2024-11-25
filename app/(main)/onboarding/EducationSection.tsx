@@ -14,7 +14,7 @@ export default function EducationSection({
     setEducations: React.Dispatch<React.SetStateAction<Education[]>>
 }) {
     const addEducation = () => {
-      setEducations([...educations, { degree: '', university: '', start_year: '', end_year: '', description: '' }])
+      setEducations([...educations, { degree: '', university: '', start_year: '', end_year: '', description: null }])
     }
   
     const removeEducation = (index: number) => {

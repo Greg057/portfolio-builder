@@ -18,7 +18,7 @@ export default function ExperienceSection({
     const addExperience = () => {
       setExperiences([
         ...experiences,
-        { company: '', position: '', start_date: '', end_date: '', description: '' },
+        { company: '', position: '', start_date: '', end_date: '', description: null },
       ])
     }
   

@@ -1,6 +1,5 @@
 export type UserInfo = {
-    id?: string;
-    user_id?: string;
+    user_id?: string; // References `auth.users.id`
     full_name: string;
     title: string | null;
     email: string;
@@ -9,39 +8,68 @@ export type UserInfo = {
     linkedin: string | null;
     about_me: string | null;
 };
-  
+
 export type WorkExperience = {
-    id?: string;
-    user_id?: string;
+    id?: string; // Primary key
+    user_id?: string; // References `auth.users.id`
     company: string;
     position: string;
     start_date: string;
-    end_date: string | null;
+    end_date: string;
     description: string | null;
 };
-  
+
 export type Project = {
-    id?: string;
-    user_id?: string;
+    id?: string; // Primary key
+    user_id?: string; // References `auth.users.id`
     name: string;
-    description: string;
+    description: string | null;
     github_link: string | null;
-    technologies: string[];
+    live_link: string | null; // Optional live project link
+    technologies: string[]; // Array of technology IDs
+    availableTechnologies: {value: string, label: string}[];
 };
-  
+
 export type Education = {
-    id?: string;
-    user_id?: string;
+    id?: string; // Primary key
+    user_id?: string; // References `auth.users.id`
     degree: string;
     university: string;
     start_year: string;
-    end_year: string | null;
+    end_year: string;
     description: string | null;
 };
-  
-export type Skill = {
-    id?: string;
-    user_id?: string;
-    name: string;
+
+export type Technology = {
+    id?: string; // Primary key
+    name: string; // Unique technology name (e.g., "React")
+};
+
+export type TechnologyImage = {
+    id?: string; // Primary key
+    technology_id: string; // References `technologies.id`
+    image_url: string; // URL for the technology image
+    version: string; // Type of image (e.g., "default", "rounded", "flat")
+};
+
+export type PortfolioData = {
+    user_id?: string; // Primary key, references `auth.users.id`
+    primary_color: string | null; // Portfolio primary color
+    secondary_color: string | null; // Portfolio secondary color
+    is_saved: boolean; // Whether the portfolio is saved
+    is_deployed: boolean; // Whether the portfolio is deployed
+    deployed_at: string | null; // Timestamp of deployment
+    updated_at: string; // Auto-updated timestamp
+    created_at: string; // Creation timestamp
+};
+
+export type PortfolioSection = {
+    id?: string; // Primary key
+    user_id?: string; // References `auth.users.id`
+    section_name: string; // Name of the portfolio section (e.g., "projects", "skills")
+    component_choice: string; // UI component chosen for this section
+    additional_settings: Record<string, any> | null; // JSON for per-section settings
+    created_at: string; // Creation timestamp
+    updated_at: string; // Last updated timestamp
 };
   
