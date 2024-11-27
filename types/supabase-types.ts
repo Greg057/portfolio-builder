@@ -20,14 +20,14 @@ export type WorkExperience = {
 };
 
 export type Project = {
-    id?: string; // Primary key
+    id: string; // Primary key
     user_id?: string; // References `auth.users.id`
     name: string;
     description: string | null;
     github_link: string | null;
     live_link: string | null; // Optional live project link
-    technologies: string[]; // Array of technology IDs
-    availableTechnologies: {value: string, label: string}[];
+    technologies: number[]; // Array of technology IDs
+    availableTechnologies: {value: number, label: string}[];
 };
 
 export type Education = {
@@ -40,14 +40,14 @@ export type Education = {
     description: string | null;
 };
 
-export type Technology = {
-    id?: string; // Primary key
-    name: string; // Unique technology name (e.g., "React")
-};
+export type UserTechnology = {
+    user_id?: string;
+    technology_id: number | null;
+}
 
 export type TechnologyImage = {
-    id?: string; // Primary key
-    technology_id: string; // References `technologies.id`
+    id: number; // Primary key
+    technology_id: number; // References `technologies.id`
     image_url: string; // URL for the technology image
     version: string; // Type of image (e.g., "default", "rounded", "flat")
 };

@@ -18,14 +18,15 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Project } from '@/types/supabase-types';
+import { v4 as uuidv4 } from 'uuid';
 
 // Initial list of all available technologies
 const initialAvailableTechnologies = [
-  { value: 'javascript', label: 'JavaScript' },
-  { value: 'typescript', label: 'TypeScript' },
-  { value: 'react', label: 'React' },
-  { value: 'nextjs', label: 'Next.js' },
-  { value: 'nodejs', label: 'Node.js' },
+  { value: 1, label: 'JavaScript' },
+  { value: 2, label: 'TypeScript' },
+  { value: 3, label: 'React' },
+  { value: 4, label: 'Next.js' },
+  { value: 5, label: 'Node.js' },
 ];
 
 export default function ProjectSection({
@@ -36,9 +37,9 @@ export default function ProjectSection({
   setProjects: React.Dispatch<React.SetStateAction<Project[]>>;
 }) {
   // Ensure all projects have availableTechnologies initialized
-  const initializeAvailableTechnologies = (technologies: string[]) => {
+  const initializeAvailableTechnologies = (technologies: number[]) => {
     return initialAvailableTechnologies.filter(
-      (tech) => !technologies.includes(tech.value)
+      (techID) => !technologies.includes(techID.value)
     );
   };
 
@@ -46,6 +47,7 @@ export default function ProjectSection({
     setProjects([
       ...projects,
       {
+        id: uuidv4(),
         name: '',
         description: null,
         github_link: null,
@@ -68,16 +70,16 @@ export default function ProjectSection({
     );
   };
 
-  const addTechnologyToProject = (projectIndex: number, tech: string) => {
+  const addTechnologyToProject = (projectIndex: number, techID: number) => {
     setProjects(
       projects.map((proj, i) =>
         i === projectIndex
           ? {
               ...proj,
-              technologies: [...(proj.technologies || []), tech],
+              technologies: [...(proj.technologies || []), techID],
               availableTechnologies: initializeAvailableTechnologies([
                 ...(proj.technologies || []),
-                tech,
+                techID,
               ]),
             }
           : proj
@@ -85,15 +87,15 @@ export default function ProjectSection({
     );
   };
 
-  const removeTechnologyFromProject = (projectIndex: number, tech: string) => {
+  const removeTechnologyFromProject = (projectIndex: number, techID: number) => {
     setProjects(
       projects.map((proj, i) =>
         i === projectIndex
           ? {
               ...proj,
-              technologies: proj.technologies?.filter((t) => t !== tech),
+              technologies: proj.technologies?.filter((t) => t !== techID),
               availableTechnologies: initializeAvailableTechnologies(
-                proj.technologies?.filter((t) => t !== tech) || []
+                proj.technologies?.filter((t) => t !== techID) || []
               ),
             }
           : proj
@@ -154,16 +156,16 @@ export default function ProjectSection({
             <div className="space-y-2">
               <Label>Technologies</Label>
               <div className="flex flex-wrap gap-2">
-                {proj.technologies?.map((tech) => (
+                {proj.technologies?.map((techID) => (
                   <Button
-                    key={tech}
+                    key={techID}
                     variant="outline"
                     size="sm"
-                    onClick={() => removeTechnologyFromProject(index, tech)}
+                    onClick={() => removeTechnologyFromProject(index, techID)}
                   >
                     {initialAvailableTechnologies.find(
-                      (t) => t.value === tech
-                    )?.label || tech}
+                      (t) => t.value === techID
+                    )?.label || techID}
                     <TrashIcon className="ml-2 h-4 w-4" />
                   </Button>
                 ))}

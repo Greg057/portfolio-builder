@@ -15,23 +15,23 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Technology } from '@/types/supabase-types';
+import { UserTechnology } from '@/types/supabase-types';
 
 // Initial list of all available technologies
 const initialAvailableTechnologies = [
-  { value: 'javascript', label: 'JavaScript' },
-  { value: 'typescript', label: 'TypeScript' },
-  { value: 'react', label: 'React' },
-  { value: 'nextjs', label: 'Next.js' },
-  { value: 'nodejs', label: 'Node.js' },
+  { value: 1, label: 'JavaScript' },
+  { value: 2, label: 'TypeScript' },
+  { value: 3, label: 'React' },
+  { value: 4, label: 'Next.js' },
+  { value: 5, label: 'Node.js' },
 ];
 
 export default function TechnologySection({
-  technologies,
-  setTechnologies,
+  userTechnologies,
+  setUserTechnologies,
 }: {
-  technologies: Technology[];
-  setTechnologies: React.Dispatch<React.SetStateAction<Technology[]>>;
+  userTechnologies: UserTechnology[];
+  setUserTechnologies: React.Dispatch<React.SetStateAction<UserTechnology[]>>;
 }) {
   const [availableTechnologies, setAvailableTechnologies] = useState(
     initialAvailableTechnologies
@@ -39,11 +39,11 @@ export default function TechnologySection({
   const [openIndexes, setOpenIndexes] = useState<number[]>([]);
 
   const addTechnology = () => {
-    setTechnologies([...technologies, { name: '', id: '' }]);
+    setUserTechnologies([...userTechnologies, { technology_id: null }]);
   };
 
   const removeTechnology = (index: number) => {
-    const removedTech = technologies[index].name;
+    const removedTech = userTechnologies[index].technology_id;
     if (removedTech) {
       // Add the removed technology back to the available list
       const removedTechOption = initialAvailableTechnologies.find(
@@ -53,40 +53,44 @@ export default function TechnologySection({
         setAvailableTechnologies((prev) => [...prev, removedTechOption]);
       }
     }
-    setTechnologies(technologies.filter((_, i) => i !== index));
+    setUserTechnologies(userTechnologies.filter((_, i) => i !== index));
   };
 
-  const updateTechnology = (index: number, techName: string) => {
-    const previouslySelectedTech = technologies[index].name;
-
-    // If switching technologies, first add the previously selected one back to the available list
-    if (previouslySelectedTech && previouslySelectedTech !== techName) {
+  const updateTechnology = (index: number, techID: number) => {
+    const previouslySelectedTech = userTechnologies[index].technology_id;
+  
+    // Add the previously selected technology back to the available list
+    if (previouslySelectedTech && previouslySelectedTech !== techID) {
       const prevTechOption = initialAvailableTechnologies.find(
         (tech) => tech.value === previouslySelectedTech
       );
       if (prevTechOption) {
-        setAvailableTechnologies((prev) => [...prev, prevTechOption]);
+        setAvailableTechnologies((prev) =>
+          prev.some((t) => t.value === prevTechOption.value)
+            ? prev
+            : [...prev, prevTechOption]
+        );
       }
     }
-
-    // Remove the selected technology from the available list
+  
+    // Remove the newly selected technology from the available list
     const selectedTechOption = initialAvailableTechnologies.find(
-      (tech) => tech.value === techName
+      (tech) => tech.value === techID
     );
     if (selectedTechOption) {
       setAvailableTechnologies((prev) =>
-        prev.filter((tech) => tech.value !== techName)
+        prev.filter((tech) => tech.value !== techID)
       );
     }
-
-    // Update the technology for the current index
-    setTechnologies(
-      technologies.map((item, i) =>
-        i === index ? { ...item, name: techName } : item
+  
+    // Update the technology in userTechnologies
+    setUserTechnologies(
+      userTechnologies.map((item, i) =>
+        i === index ? { ...item, technology_id: techID } : item
       )
     );
   };
-
+  
   const toggleOpen = (index: number) => {
     setOpenIndexes((prev) =>
       prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
@@ -100,7 +104,7 @@ export default function TechnologySection({
         <CardDescription>Select your key technical skills</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {technologies.map((tech, index) => (
+        {userTechnologies.map((tech, index) => (
           <div key={index} className="space-y-2">
             <div className="flex items-center space-x-2">
               <Popover
@@ -111,13 +115,13 @@ export default function TechnologySection({
                   <Button
                     variant="outline"
                     role="combobox"
-                    aria-expanded={openIndexes.includes(index)}
+                    aria-expanded={openIndexes.includes(tech.technology_id!)}
                     className="flex-1 justify-between"
                   >
-                    {tech.name
+                    {tech.technology_id
                       ? initialAvailableTechnologies.find(
-                          (t) => t.value === tech.name
-                        )?.label || tech.name
+                          (t) => t.value === tech.technology_id
+                        )?.label || tech.technology_id
                       : 'Select technology...'}
                     <PlusIcon className="ml-2 h-4 w-4 opacity-50" />
                   </Button>
@@ -140,7 +144,7 @@ export default function TechnologySection({
                             <Check
                               className={cn(
                                 'ml-auto',
-                                techOption.value === tech.name
+                                techOption.value === userTechnologies[index].technology_id
                                   ? 'opacity-100'
                                   : 'opacity-0'
                               )}

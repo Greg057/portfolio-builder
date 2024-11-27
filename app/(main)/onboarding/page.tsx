@@ -2,20 +2,21 @@
 
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
-import { UserInfo, WorkExperience, Education, Project, Technology } from '@/types/supabase-types'
+import { UserInfo, WorkExperience, Education, Project, UserTechnology } from '@/types/supabase-types'
 import EducationSection from './EducationSection'
 import UserInfoSection from './UserInfoSection'
 import ExperienceSection from './ExperienceSection'
 import ProjectSection from './ProjectSection'
 import TechnologySection from './TechnologySection'
 import { createClient } from '@/utils/supabase/client'
+import { v4 as uuidv4 } from 'uuid';
 
 const initialAvailableTechnologies = [
-  { value: 'javascript', label: 'JavaScript' },
-  { value: 'typescript', label: 'TypeScript' },
-  { value: 'react', label: 'React' },
-  { value: 'nextjs', label: 'Next.js' },
-  { value: 'nodejs', label: 'Node.js' },
+  { value: 1, label: 'JavaScript' },
+  { value: 2, label: 'TypeScript' },
+  { value: 3, label: 'React' },
+  { value: 4, label: 'Next.js' },
+  { value: 5, label: 'Node.js' },
 ];
 
 export default function OnboardingPage() {
@@ -30,8 +31,8 @@ export default function OnboardingPage() {
   })
   const [educations, setEducations] = useState<Education[]>([{ degree: '', university: '', start_year: '', end_year: '', description: null }])
   const [experiences, setExperiences] = useState<WorkExperience[]>([{ company: '', position: '', start_date: '', end_date: '', description: null }])
-  const [projects, setProjects] = useState<Project[]>([{ name: '', description: '', github_link: '', live_link: '', technologies: [], availableTechnologies: initialAvailableTechnologies }])
-  const [technologies, setTechnologies] = useState<Technology[]>([{ name: '' }])
+  const [projects, setProjects] = useState<Project[]>([{ id: uuidv4(), name: '', description: '', github_link: '', live_link: '', technologies: [], availableTechnologies: initialAvailableTechnologies }])
+  const [userTechnologies, setUserTechnologies] = useState<UserTechnology[]>([{ technology_id: null }])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,19 +83,18 @@ export default function OnboardingPage() {
       projects: projects
         .filter((proj) => proj.name.trim())
         .map((proj) => ({
-          ...proj,
-          name: proj.name.trim(),
-          description: proj.description?.trim() || null,
-          github_link: proj.github_link?.trim() || null,
-          live_link: proj.live_link?.trim() || null,
-          technologies:
-            proj.technologies.length > 0
-              ? proj.technologies.map((tech) => tech.trim()).filter(Boolean)
-              : null,
+          project: {
+            id: proj.id,
+            name: proj.name.trim(),
+            description: proj.description?.trim() || null,
+            github_link: proj.github_link?.trim() || null,
+            live_link: proj.live_link?.trim() || null
+          },
+          projectTechnologies: proj.technologies.map((techID) => ({
+            project_id: proj.id,
+            technology_id: techID,
+          })),
         })),
-      technologies: technologies
-        .filter((tech) => tech.name.trim())
-        .map((tech) => tech.name.trim()),
     };
   
     try {
@@ -103,60 +103,47 @@ export default function OnboardingPage() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      
+      if (!user) {
+        // Anonymous user: Save data to sessionStorage
+        sessionStorage.setItem('portfolioData', JSON.stringify(payload));
+        console.log('Data saved to sessionStorage for anonymous user');
+        alert('Your data has been temporarily saved. Please sign up to save it permanently!');
+      } else {
+        const userId = user.id;
 
-      // const { data: userInfoData, error: userInfoError } = await supabase
-      //   .from('user_info')
-      //   .insert(payload.userInfo)
-      //   .select(); // Returns the inserted row
+        const dbPayload = {
+          userInfo: { ...payload.userInfo, user_id: userId },
+          educations: payload.educations.map((edu) => ({ ...edu, user_id: userId })),
+          experiences: payload.experiences.map((exp) => ({ ...exp, user_id: userId })),
+          projects: payload.projects.map((proj) => ({ ...proj.project, user_id: userId })),
+          projectTechnologies: payload.projects.flatMap((proj) => proj.projectTechnologies),
+          userTechnologies: userTechnologies.map((tech) => ({ technology_id: tech.technology_id, user_id: userId }))
+        };
   
-      // if (userInfoError) throw userInfoError;
+        const { error: userInfoError } = await supabase.from('personal_info').insert(dbPayload.userInfo);
+        if (userInfoError) throw userInfoError;
   
-      // const userId = userInfoData[0].id;
+        const { error: educationsError } = await supabase.from('education').insert(dbPayload.educations);
+        if (educationsError) throw educationsError;
   
-      // // Insert related data using the `user_id` from `user_info`
-      // if (payload.educations.length > 0) {
-      //   const { error: educationError } = await supabase
-      //     .from('education')
-      //     .insert(
-      //       payload.educations.map((edu) => ({ ...edu, user_id: userId }))
-      //     );
+        const { error: experiencesError } = await supabase.from('work_experience').insert(dbPayload.experiences);
+        if (experiencesError) throw experiencesError;
   
-      //   if (educationError) throw educationError;
-      // }
-  
-      // if (payload.experiences.length > 0) {
-      //   const { error: experienceError } = await supabase
-      //     .from('work_experience')
-      //     .insert(
-      //       payload.experiences.map((exp) => ({ ...exp, user_id: userId }))
-      //     );
-  
-      //   if (experienceError) throw experienceError;
-      // }
-  
-      // if (payload.projects.length > 0) {
-      //   const { error: projectError } = await supabase
-      //     .from('projects')
-      //     .insert(
-      //       payload.projects.map((proj) => ({ ...proj, user_id: userId }))
-      //     );
-  
-      //   if (projectError) throw projectError;
-      // }
-  
-      // if (payload.technologies) {
-      //   const { error: technologiesError } = await supabase
-      //     .from('technologies')
-      //     .insert({ skill_list: payload.technologies, user_id: userId });
-  
-      //   if (technologiesError) throw technologiesError;
-      // }
-  
-      alert('Profile saved successfully!');
+        const { error: projectsError } = await supabase.from('projects').insert(dbPayload.projects);
+        if (projectsError) throw projectsError;
+        
+        const { error: projectsTechnologiesError } = await supabase.from('project_technologies').insert(dbPayload.projectTechnologies);
+        if (projectsTechnologiesError) throw projectsTechnologiesError;
+        
+        const { error: userTechnologiesError } = await supabase.from('user_technologies').insert(dbPayload.userTechnologies);
+        if (userTechnologiesError) throw userTechnologiesError;
+
+        console.log('Data successfully saved to Supabase for authenticated user');
+        alert('Your data has been successfully saved!');
+      }
     } catch (error) {
-      console.error('Error submitting profile:', error);
-      alert('Failed to save profile. Please try again.');
+      console.error('Error while saving data:', error);
+      alert('An error occurred while saving your data. Please try again.');
     }
   };
   
@@ -202,7 +189,7 @@ export default function OnboardingPage() {
         <EducationSection educations={educations} setEducations={setEducations} />
         <ExperienceSection experiences={experiences} setExperiences={setExperiences} />
         <ProjectSection projects={projects} setProjects={setProjects} />
-        <TechnologySection technologies={technologies} setTechnologies={setTechnologies} />
+        <TechnologySection userTechnologies={userTechnologies} setUserTechnologies={setUserTechnologies} />
 
         <Button type="submit" className="w-full">Build Portfolio</Button>
       </form>
