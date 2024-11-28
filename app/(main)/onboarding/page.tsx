@@ -10,6 +10,7 @@ import ProjectSection from './ProjectSection'
 import TechnologySection from './TechnologySection'
 import { createClient } from '@/utils/supabase/client'
 import { v4 as uuidv4 } from 'uuid';
+import { redirect } from 'next/navigation'
 
 const initialAvailableTechnologies = [
   { value: 1, label: 'JavaScript' },
@@ -104,10 +105,21 @@ export default function OnboardingPage() {
       } = await supabase.auth.getUser();
 
       if (!user) {
+        const sessionPayload = {
+          userInfo: { ...payload.userInfo, user_id: null }, 
+          educations: payload.educations.map((edu) => ({ ...edu, user_id: null })), 
+          experiences: payload.experiences.map((exp) => ({ ...exp, user_id: null })), 
+          projects: payload.projects.map((proj) => ({ ...proj.project, user_id: null })), 
+          projectTechnologies: payload.projects.flatMap((proj) => proj.projectTechnologies), 
+          userTechnologies: userTechnologies.map((tech) => ({ technology_id: tech.technology_id, user_id: null }))
+        };
         // Anonymous user: Save data to sessionStorage
-        sessionStorage.setItem('portfolioData', JSON.stringify(payload));
+        sessionStorage.setItem('portfolioData', JSON.stringify(sessionPayload));
         console.log('Data saved to sessionStorage for anonymous user');
         alert('Your data has been temporarily saved. Please sign up to save it permanently!');
+
+        redirect('/portfolio-editor')
+
       } else {
         const userId = user.id;
 
@@ -140,6 +152,8 @@ export default function OnboardingPage() {
 
         console.log('Data successfully saved to Supabase for authenticated user');
         alert('Your data has been successfully saved!');
+
+        redirect('/portfolio-editor')
       }
     } catch (error) {
       console.error('Error while saving data:', error);
