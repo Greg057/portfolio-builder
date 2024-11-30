@@ -1,102 +1,24 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { motion, useScroll, useSpring, useInView } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { GithubIcon, LinkedinIcon, MailIcon, ExternalLinkIcon, ChevronDownIcon } from 'lucide-react'
+import { Education, Project, UserInfo, Technology, WorkExperience, UserTechnology } from '@/types/supabase-types'
+import { createClient } from '@/utils/supabase/client'
 
-interface Education {
-  institution: string;
-  degree: string;
-  year: string;
-}
-
-interface Experience {
-  company: string;
-  logo: string;
-  position: string;
-  duration: string;
-  description: string;
-}
-
-interface Project {
-  name: string;
-  description: string;
-  technologies: string[];
-  link: string;
-}
-
-interface Skill {
-  name: string;
-}
-
-const personalInfo = {
-  name: "Jane Doe",
-  title: "Full Stack Developer",
-  email: "jane.doe@example.com",
-  github: "https://github.com/janedoe",
-  linkedin: "https://linkedin.com/in/janedoe",
-}
-
-const education: Education[] = [
-  {
-    institution: "University of Technology",
-    degree: "Bachelor of Science in Computer Science",
-    year: "2018 - 2022",
-  },
-  {
-    institution: "Code Academy",
-    degree: "Full Stack Web Development Bootcamp",
-    year: "2023",
-  },
-]
-
-const experiences: Experience[] = [
-  {
-    company: "Tech Innovators Inc.",
-    logo: "/placeholder.svg?height=40&width=40",
-    position: "Full Stack Developer",
-    duration: "2023 - Present",
-    description: "Developing and maintaining web applications using React, Node.js, and PostgreSQL. Implementing new features and optimizing application performance.",
-  },
-  {
-    company: "StartUp Solutions",
-    logo: "/placeholder.svg?height=40&width=40",
-    position: "Junior Web Developer",
-    duration: "2022 - 2023",
-    description: "Assisted in the development of responsive web designs and implemented front-end features using HTML, CSS, and JavaScript.",
-  },
-]
-
-const projects: Project[] = [
-  {
-    name: "E-commerce Platform",
-    description: "A full-featured e-commerce platform with user authentication, product management, and payment integration.",
-    technologies: ["React", "Node.js", "Express", "MongoDB"],
-    link: "https://github.com/janedoe/ecommerce-platform",
-  },
-  {
-    name: "Task Management App",
-    description: "A collaborative task management application with real-time updates and team features.",
-    technologies: ["Vue.js", "Firebase", "Tailwind CSS"],
-    link: "https://github.com/janedoe/task-manager",
-  },
-]
-
-const skills: Skill[] = [
-  { name: "JavaScript" },
-  { name: "React" },
-  { name: "Node.js" },
-  { name: "TypeScript" },
-  { name: "Python" },
-  { name: "Express" },
-  { name: "Tailwind CSS" },
-]
 
 export default function PortfolioPage() {
+  const [personalInfo, setPersonalInfo] = useState<UserInfo>();
+  const [education, setEducation] = useState<Education[]>([]);
+  const [experiences, setExperiences] = useState<WorkExperience[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [userTechnologies, setUserTechnologies] = useState<Technology[]>([]);
+  const [loading, setLoading] = useState(true);
+  
   const [activeSection, setActiveSection] = useState('about')
   const containerRef = useRef(null)
   const { scrollYProgress } = useScroll({ target: containerRef })
@@ -111,7 +33,7 @@ export default function PortfolioPage() {
     experience: useRef(null),
     projects: useRef(null),
     education: useRef(null),
-    skills: useRef(null),
+    userTechnologies: useRef(null),
   }
 
   const sectionInView = {
@@ -119,8 +41,138 @@ export default function PortfolioPage() {
     experience: useInView(sectionRefs.experience, { once: true }),
     projects: useInView(sectionRefs.projects, { once: true }),
     education: useInView(sectionRefs.education, { once: true }),
-    skills: useInView(sectionRefs.skills, { once: true }),
+    userTechnologies: useInView(sectionRefs.userTechnologies, { once: true }),
   }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const sessionData = sessionStorage.getItem("portfolioData");
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id;
+
+      if (sessionData && !userId) {
+        try {
+          const data = JSON.parse(sessionData);
+      
+          // Set basic data from sessionStorage
+          setPersonalInfo(data.userInfo || null);
+          setEducation(data.educations || []);
+          setExperiences(data.experiences || []);
+          setProjects(data.projects || []);
+      
+          // Resolve userTechnologies to include technology names
+          const userTechnologies = data.userTechnologies || [];
+          if (userTechnologies.length > 0) {
+            const techIds = userTechnologies.map((ut: UserTechnology) => ut.technology_id);
+      
+            // Fetch technology names based on IDs stored in sessionStorage
+            const { data: technologies, error: techDetailsError } = await supabase
+              .from("technologies")
+              .select("*")
+              .in("id", techIds);
+      
+            if (techDetailsError) {
+              console.error("Error fetching technology details from Supabase:", techDetailsError);
+              setUserTechnologies(userTechnologies); // Fallback to raw IDs if fetching fails
+            } else {
+              // Map userTechnologies to include technology names
+              const userTechnologyNames = userTechnologies.map((ut: UserTechnology) => {
+                const tech = technologies.find((t) => t.id === ut.technology_id);
+                return { id: ut.technology_id, name: tech?.name || "Unknown" };
+              });
+      
+              setUserTechnologies(userTechnologyNames);
+            }
+          } else {
+            setUserTechnologies([]);
+          }
+        } catch (error) {
+          console.error("Error parsing sessionStorage data:", error);
+        }
+      } else if (userId) {
+        // Authenticated user: Load data from Supabase
+        try {
+          const { data: userInfo, error: userInfoError } = await supabase
+            .from("personal_info")
+            .select("*")
+            .eq("user_id", userId)
+            .single();
+
+          const { data: educations, error: educationError } = await supabase
+            .from("education")
+            .select("*")
+            .eq("user_id", userId);
+
+          const { data: experiences, error: experienceError } = await supabase
+            .from("work_experience")
+            .select("*")
+            .eq("user_id", userId);
+
+          const { data: projects, error: projectError } = await supabase
+            .from("projects")
+            .select("*")
+            .eq("user_id", userId);
+
+          const { data: userTechnologies, error: technologiesError } = await supabase
+            .from("user_technologies")
+            .select("technology_id")
+            .eq("user_id", userId);
+
+          // Handle errors
+          if (userInfoError || educationError || experienceError || projectError || technologiesError) {
+            console.error(
+              "Error fetching data:",
+              userInfoError,
+              educationError,
+              experienceError,
+              projectError,
+              technologiesError
+            );
+            return;
+          }
+
+          let userTechnologyNames: Technology[] = [];
+
+          if (userTechnologies && userTechnologies.length > 0) {
+            const techIds = userTechnologies.map((ut) => ut.technology_id);
+
+            // Fetch technologies data
+            const { data: technologies, error: techDetailsError } = await supabase
+              .from("technologies")
+              .select("*")
+              .in("id", techIds);
+
+            if (techDetailsError) {
+              console.error("Error fetching technology details:", techDetailsError);
+              return; // Exit or handle the error appropriately
+            }
+
+            if (technologies) {
+              // Map user technologies to names
+              userTechnologyNames = userTechnologies.map((ut) => {
+                const tech = technologies.find((t) => t.id === ut.technology_id);
+                return { id: ut.technology_id, name: tech?.name || "Unknown" };
+              });
+            }
+          }
+
+          // Update state with fetched data
+          setPersonalInfo(userInfo);
+          setEducation(educations);
+          setExperiences(experiences);
+          setProjects(projects);
+          setUserTechnologies(userTechnologyNames);
+
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
 
   const handleScroll = (sectionId: string) => {
     const section = document.getElementById(sectionId)
@@ -143,19 +195,29 @@ export default function PortfolioPage() {
           transition={{ duration: 0.8 }}
           className="relative z-10"
         >
-          <h1 className="text-6xl font-bold mb-4">{personalInfo.name}</h1>
-          <p className="text-2xl mb-8">{personalInfo.title}</p>
-          <div className="flex justify-center space-x-6">
-            <a href={`mailto:${personalInfo.email}`} className="hover:text-primary transition-colors">
-              <MailIcon size={24} />
-            </a>
-            <a href={personalInfo.github} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-              <GithubIcon size={24} />
-            </a>
-            <a href={personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-              <LinkedinIcon size={24} />
-            </a>
-          </div>
+          {personalInfo ? (
+            <>
+              <h1 className="text-6xl font-bold mb-4">{personalInfo.full_name}</h1>
+              <p className="text-2xl mb-8">{personalInfo.title || ""}</p>
+              <div className="flex justify-center space-x-6">
+                <a href={`mailto:${personalInfo.email}`} className="hover:text-primary transition-colors">
+                  <MailIcon size={24} />
+                </a>
+                {personalInfo?.github && (
+                  <a href={personalInfo.github} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                    <GithubIcon size={24} />
+                  </a>
+                )}
+                {personalInfo?.linkedin && (
+                  <a href={personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                    <LinkedinIcon size={24} />
+                  </a>
+                )}
+              </div>
+            </>
+          ) : (
+            <p>Loading personal info...</p>
+          )}
         </motion.div>
         <motion.div
           className="absolute inset-0 z-0"
@@ -181,7 +243,7 @@ export default function PortfolioPage() {
 
       <nav className="sticky top-0 bg-background/80 backdrop-blur-md z-40 py-4 mb-12">
         <ul className="flex justify-center space-x-8">
-          {['about', 'experience', 'projects', 'education', 'skills'].map((section) => (
+          {['about', 'experience', 'projects', 'education', 'userTechnologies'].map((section) => (
             <li key={section}>
               <Button
                 variant="ghost"
@@ -199,28 +261,22 @@ export default function PortfolioPage() {
       </nav>
 
       <main className="container mx-auto px-4 py-12">
-        <section id="about" ref={sectionRefs.about} className="mb-20">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={sectionInView.about ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-3xl font-bold mb-8">About Me</h2>
-            <Card className="bg-card">
-              <CardContent className="prose prose-lg dark:prose-invert">
-                <p>
-                  I'm a passionate Full Stack Developer with a keen interest in building scalable web applications 
-                  and exploring new technologies. With a strong foundation in both front-end and back-end development, 
-                  I strive to create efficient, user-friendly solutions to complex problems.
-                </p>
-                <p>
-                  When I'm not coding, you can find me contributing to open-source projects, writing tech blogs, 
-                  or experimenting with new programming languages and frameworks.
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </section>
+        {personalInfo?.about_me && (
+          <section id="about" ref={sectionRefs.about} className="mb-20">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={sectionInView.about ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5 }}
+            >
+              <h2 className="text-3xl font-bold mb-8">About Me</h2>
+              <Card className="bg-card">
+                <CardContent className="prose prose-lg dark:prose-invert">
+                  <p>{personalInfo.about_me}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </section>
+        )}
 
         <section id="experience" ref={sectionRefs.experience} className="mb-20">
           <motion.div
@@ -239,17 +295,16 @@ export default function PortfolioPage() {
                 >
                   <Card className="bg-card overflow-hidden">
                     <CardHeader className="flex flex-row items-center space-x-4 pb-4">
-                      <div className="w-12 h-12 rounded-full overflow-hidden bg-muted flex items-center justify-center">
-                        <Image src={exp.logo} alt={exp.company} width={40} height={40} />
-                      </div>
                       <div>
-                        <CardTitle className="text-xl">{exp.position}</CardTitle>
-                        <CardDescription>{exp.company} | {exp.duration}</CardDescription>
+                        <CardTitle className="text-xl">{exp.company}</CardTitle>
+                        <CardDescription>{exp.position} | {exp.start_date}-{exp.end_date}</CardDescription>
                       </div>
                     </CardHeader>
-                    <CardContent>
-                      <p>{exp.description}</p>
-                    </CardContent>
+                    {exp.description && (
+                      <CardContent>
+                        <p>{exp.description}</p>
+                      </CardContent>
+                    )}
                   </Card>
                 </motion.div>
               ))}
@@ -278,7 +333,7 @@ export default function PortfolioPage() {
                     <CardHeader>
                       <CardTitle className="text-xl">{project.name}</CardTitle>
                     </CardHeader>
-                    <CardContent className="flex-grow">
+                    {/* <CardContent className="flex-grow">
                       <p className="mb-4">{project.description}</p>
                       <div className="flex flex-wrap gap-2 mb-4">
                         {project.technologies.map((tech, i) => (
@@ -287,13 +342,36 @@ export default function PortfolioPage() {
                           </Badge>
                         ))}
                       </div>
-                    </CardContent>
+                    </CardContent> */}
                     <CardContent className="pt-0">
-                      <Button asChild variant="outline" className="w-full">
-                        <a href={project.link} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
-                          View Project <ExternalLinkIcon className="ml-2 h-4 w-4" />
-                        </a>
-                      </Button>
+                      <div className="flex justify-between gap-4">
+                        {/* Live project link */}
+                        {project.live_link && (
+                          <Button asChild variant="outline" className="w-full">
+                            <a
+                              href={project.live_link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center justify-center"
+                            >
+                              View Project <ExternalLinkIcon className="ml-2 h-4 w-4" />
+                            </a>
+                          </Button>
+                        )}
+                        {/* GitHub project link */}
+                        {project.github_link && (
+                          <Button asChild variant="outline" className="w-full">
+                            <a
+                              href={project.github_link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center justify-center"
+                            >
+                              GitHub <GithubIcon className="ml-2 h-4 w-4" />
+                            </a>
+                          </Button>
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -319,9 +397,17 @@ export default function PortfolioPage() {
                 >
                   <Card className="bg-card">
                     <CardHeader>
-                      <CardTitle className="text-xl">{edu.degree}</CardTitle>
-                      <CardDescription>{edu.institution} | {edu.year}</CardDescription>
+                      <CardTitle className="text-xl">{edu.university}</CardTitle>
+                      <CardDescription>
+                        {edu.degree} | {edu.start_year}-{edu.end_year}
+                      </CardDescription>
                     </CardHeader>
+                    {/* Render description only if it exists */}
+                    {edu.description && (
+                      <CardContent className="prose prose-lg dark:prose-invert">
+                        <p>{edu.description}</p>
+                      </CardContent>
+                    )}
                   </Card>
                 </motion.div>
               ))}
@@ -329,28 +415,32 @@ export default function PortfolioPage() {
           </motion.div>
         </section>
 
-        <section id="skills" ref={sectionRefs.skills}>
+        <section id="userTechnologies" ref={sectionRefs.userTechnologies}>
           <motion.div
             initial={{ opacity: 0, y: 50 }}
-            animate={sectionInView.skills ? { opacity: 1, y: 0 } : {}}
+            animate={sectionInView.userTechnologies ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5 }}
           >
             <h2 className="text-3xl font-bold mb-8">Skills</h2>
             <div className="flex flex-wrap gap-4">
-              {skills.map((skill, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <Badge variant="outline" className="text-lg py-2 px-4">
-                    {skill.name}
-                  </Badge>
-                </motion.div>
-              ))}
+              {userTechnologies.length > 0 ? (
+                userTechnologies.map((skill, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <Badge variant="outline" className="text-lg py-2 px-4">
+                      {skill.name}
+                    </Badge>
+                  </motion.div>
+                ))
+              ) : (
+                <p>No skills to display</p> // Handle case where no technologies are available
+              )}
             </div>
           </motion.div>
         </section>

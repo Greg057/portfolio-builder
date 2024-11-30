@@ -40,6 +40,11 @@ export type Education = {
     description: string | null;
 };
 
+export type Technology = {
+    id: number;
+    name: string;
+}
+
 export type UserTechnology = {
     user_id?: string;
     technology_id: number | null;
