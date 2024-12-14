@@ -261,22 +261,20 @@ export default function PortfolioPage() {
       </nav>
 
       <main className="container mx-auto px-4 py-12">
-        {personalInfo?.about_me && (
-          <section id="about" ref={sectionRefs.about} className="mb-20">
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={sectionInView.about ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5 }}
-            >
-              <h2 className="text-3xl font-bold mb-8">About Me</h2>
-              <Card className="bg-card">
-                <CardContent className="prose prose-lg dark:prose-invert">
-                  <p>{personalInfo.about_me}</p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </section>
-        )}
+        <section id="about" ref={sectionRefs.about} className="mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={sectionInView.about ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl font-bold mb-8">About Me</h2>
+            <Card className="bg-card">
+              <CardContent className="prose prose-lg dark:prose-invert">
+                <p>{personalInfo?.about_me}</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </section>
 
         <section id="experience" ref={sectionRefs.experience} className="mb-20">
           <motion.div

@@ -106,7 +106,7 @@ export default function PortfolioEditor() {
           </ScrollArea>
         </div>
 
-        <ScrollArea className="h-[calc(100vh-8rem)]">
+        <ScrollArea className="h-[100%] w-[100%]">
           <PortfolioPage />
         </ScrollArea>
       </main>
