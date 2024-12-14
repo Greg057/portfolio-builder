@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { GithubIcon, LinkedinIcon, MailIcon, ExternalLinkIcon, ChevronDownIcon } from 'lucide-react'
 import { Education, Project, UserInfo, Technology, WorkExperience, UserTechnology } from '@/types/supabase-types'
 import { createClient } from '@/utils/supabase/client'
+import { revalidatePath } from 'next/cache'
 
 
 export default function PortfolioPage() {
@@ -130,6 +131,45 @@ export default function PortfolioPage() {
               technologiesError
             );
             return;
+          }
+
+          if (projects && projects.length > 0) {
+            await Promise.all(projects.map(async (project) => {
+              project.technologyIds = [];
+              project.technologyNames = [];
+              const { data: projectTechnologies, error: projectTechnologiesError } = await supabase
+                .from("project_technologies")
+                .select("*")
+                .eq("project_id", project.id);
+              
+              if (projectTechnologiesError) {
+                console.log('Error fetching project technologies')
+              }
+              
+              if (projectTechnologies) {
+                projectTechnologies.map(tech => {
+                  project.technologyIds.push(tech.technology_id)
+                })
+              } 
+
+              if (project.technologyIds.length > 0) {
+                const { data: technologies, error: techDetailsError } = await supabase
+                  .from("technologies")
+                  .select("*")
+                  .in("id", project.technologyIds);
+
+                if (techDetailsError) {
+                  console.error("Error fetching technology details:", techDetailsError);
+                  return; // Exit or handle the error appropriately
+                }
+
+                if (technologies) {
+                  technologies.map(tech => {
+                    project.technologyNames.push(tech.name)
+                  })
+                }
+              }
+            }))
           }
 
           let userTechnologyNames: Technology[] = [];
@@ -331,19 +371,18 @@ export default function PortfolioPage() {
                     <CardHeader>
                       <CardTitle className="text-xl">{project.name}</CardTitle>
                     </CardHeader>
-                    {/* <CardContent className="flex-grow">
-                      <p className="mb-4">{project.description}</p>
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {project.technologies.map((tech, i) => (
-                          <Badge key={i} variant="secondary">
-                            {tech}
-                          </Badge>
-                        ))}
-                      </div>
-                    </CardContent> */}
+                      <CardContent className="flex-grow">
+                        <p className="mb-4">{project.description}</p>
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {project.technologyNames?.map((tech, i) => (
+                            <Badge key={i} variant="secondary">
+                              {tech}
+                            </Badge>
+                          ))}
+                        </div>
+                      </CardContent>
                     <CardContent className="pt-0">
                       <div className="flex justify-between gap-4">
-                        {/* Live project link */}
                         {project.live_link && (
                           <Button asChild variant="outline" className="w-full">
                             <a
@@ -356,7 +395,6 @@ export default function PortfolioPage() {
                             </a>
                           </Button>
                         )}
-                        {/* GitHub project link */}
                         {project.github_link && (
                           <Button asChild variant="outline" className="w-full">
                             <a

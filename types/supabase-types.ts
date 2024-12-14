@@ -28,6 +28,7 @@ export type Project = {
     live_link: string | null; // Optional live project link
     technologies: number[]; // Array of technology IDs
     availableTechnologies: {value: number, label: string}[];
+    technologyNames?: string[]
 };
 
 export type Education = {
