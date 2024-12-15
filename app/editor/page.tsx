@@ -1,18 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useToast } from "@/components/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { EyeIcon, RocketIcon, SaveIcon } from 'lucide-react'
-import PortfolioPage from '../portfolio/page'
+import { createClient } from '@/utils/supabase/client'
 import UserInfo1 from '../portfolio/userInfo/UserInfo1'
 import UserInfo2 from '../portfolio/userInfo/UserInfo2'
 import Experiences1 from '../portfolio/experiences/Experiences1'
 import Education1 from '../portfolio/education/Education1'
 import Projects1 from '../portfolio/projects/Projects1'
 import Skills1 from '../portfolio/skills/Skills1'
+import Link from 'next/link'
+import { Education, Project, UserInfo, Technology, WorkExperience, UserTechnology } from '@/types/supabase-types'
+import PortfolioPage from './PortfolioPage'
 
 const userInfoComponents = [UserInfo1, UserInfo2]
 const workExperienceComponents = [Experiences1]
@@ -29,6 +32,12 @@ const sections = [
 ]
 
 export default function PortfolioEditor() {
+  const [personalInfo, setPersonalInfo] = useState<UserInfo>();
+  const [education, setEducation] = useState<Education[]>([]);
+  const [experiences, setExperiences] = useState<WorkExperience[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [userTechnologies, setUserTechnologies] = useState<Technology[]>([]);
+
   const { toast } = useToast()
   const [selectedComponents, setSelectedComponents] = useState({
     userInfo: UserInfo1,
@@ -52,14 +61,6 @@ export default function PortfolioEditor() {
     })
   }
 
-  const handlePreview = () => {
-    console.log('Navigating to preview page')
-    toast({
-      title: "Previewing Portfolio",
-      description: "Opening preview in a new tab.",
-    })
-  }
-
   const handleDeploy = () => {
     console.log('Deploying portfolio')
     toast({
@@ -67,6 +68,174 @@ export default function PortfolioEditor() {
       description: "Your portfolio is now live!",
     })
   }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const sessionData = sessionStorage.getItem("portfolioData");
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id;
+
+      if (sessionData && !userId) {
+        try {
+          const data = JSON.parse(sessionData);
+      
+          // Set basic data from sessionStorage
+          setPersonalInfo(data.userInfo || null);
+          setEducation(data.educations || []);
+          setExperiences(data.experiences || []);
+          setProjects(data.projects || []);
+      
+          // Resolve userTechnologies to include technology names
+          const userTechnologies = data.userTechnologies || [];
+          if (userTechnologies.length > 0) {
+            const techIds = userTechnologies.map((ut: UserTechnology) => ut.technology_id);
+      
+            // Fetch technology names based on IDs stored in sessionStorage
+            const { data: technologies, error: techDetailsError } = await supabase
+              .from("technologies")
+              .select("*")
+              .in("id", techIds);
+      
+            if (techDetailsError) {
+              console.error("Error fetching technology details from Supabase:", techDetailsError);
+              setUserTechnologies(userTechnologies); // Fallback to raw IDs if fetching fails
+            } else {
+              // Map userTechnologies to include technology names
+              const userTechnologyNames = userTechnologies.map((ut: UserTechnology) => {
+                const tech = technologies.find((t) => t.id === ut.technology_id);
+                return { id: ut.technology_id, name: tech?.name || "Unknown" };
+              });
+      
+              setUserTechnologies(userTechnologyNames);
+            }
+          } else {
+            setUserTechnologies([]);
+          }
+        } catch (error) {
+          console.error("Error parsing sessionStorage data:", error);
+        }
+      } else if (userId) {
+        // Authenticated user: Load data from Supabase
+        try {
+          const { data: userInfo, error: userInfoError } = await supabase
+            .from("personal_info")
+            .select("*")
+            .eq("user_id", userId)
+            .single();
+
+          const { data: educations, error: educationError } = await supabase
+            .from("education")
+            .select("*")
+            .eq("user_id", userId);
+
+          const { data: experiences, error: experienceError } = await supabase
+            .from("work_experience")
+            .select("*")
+            .eq("user_id", userId);
+
+          const { data: projects, error: projectError } = await supabase
+            .from("projects")
+            .select("*")
+            .eq("user_id", userId);
+
+          const { data: userTechnologies, error: technologiesError } = await supabase
+            .from("user_technologies")
+            .select("technology_id")
+            .eq("user_id", userId);
+
+          // Handle errors
+          if (userInfoError || educationError || experienceError || projectError || technologiesError) {
+            console.error(
+              "Error fetching data:",
+              userInfoError,
+              educationError,
+              experienceError,
+              projectError,
+              technologiesError
+            );
+            return;
+          }
+
+          if (projects && projects.length > 0) {
+            await Promise.all(projects.map(async (project) => {
+              project.technologyIds = [];
+              project.technologyNames = [];
+              const { data: projectTechnologies, error: projectTechnologiesError } = await supabase
+                .from("project_technologies")
+                .select("*")
+                .eq("project_id", project.id);
+              
+              if (projectTechnologiesError) {
+                console.log('Error fetching project technologies')
+              }
+              
+              if (projectTechnologies) {
+                projectTechnologies.map(tech => {
+                  project.technologyIds.push(tech.technology_id)
+                })
+              } 
+
+              if (project.technologyIds.length > 0) {
+                const { data: technologies, error: techDetailsError } = await supabase
+                  .from("technologies")
+                  .select("*")
+                  .in("id", project.technologyIds);
+
+                if (techDetailsError) {
+                  console.error("Error fetching technology details:", techDetailsError);
+                  return; // Exit or handle the error appropriately
+                }
+
+                if (technologies) {
+                  technologies.map(tech => {
+                    project.technologyNames.push(tech.name)
+                  })
+                }
+              }
+            }))
+          }
+
+          let userTechnologyNames: Technology[] = [];
+
+          if (userTechnologies && userTechnologies.length > 0) {
+            const techIds = userTechnologies.map((ut) => ut.technology_id);
+
+            // Fetch technologies data
+            const { data: technologies, error: techDetailsError } = await supabase
+              .from("technologies")
+              .select("*")
+              .in("id", techIds);
+
+            if (techDetailsError) {
+              console.error("Error fetching technology details:", techDetailsError);
+              return; // Exit or handle the error appropriately
+            }
+
+            if (technologies) {
+              // Map user technologies to names
+              userTechnologyNames = userTechnologies.map((ut) => {
+                const tech = technologies.find((t) => t.id === ut.technology_id);
+                return { id: ut.technology_id, name: tech?.name || "Unknown" };
+              });
+            }
+          }
+
+          // Update state with fetched data
+          setPersonalInfo(userInfo);
+          setEducation(educations);
+          setExperiences(experiences);
+          setProjects(projects);
+          setUserTechnologies(userTechnologyNames);
+
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="flex flex-col h-screen">
@@ -76,10 +245,29 @@ export default function PortfolioEditor() {
           Save
         </Button>
         <div className="flex space-x-2">
-          <Button variant="outline" onClick={handlePreview}>
-            <EyeIcon className="w-4 h-4 mr-2" />
-            Preview
-          </Button>
+          <Link
+            href={{
+              pathname: "/portfolio",
+              query: {
+                UserInfoComponent: selectedComponents.userInfo.name, 
+                WorkExperienceComponent: selectedComponents.workExperience.name, 
+                EducationComponent: selectedComponents.education.name,
+                ProjectsComponent: selectedComponents.projects.name,
+                UserSkillsComponent: selectedComponents.userSkills.name,
+                personalInfo: JSON.stringify(personalInfo),
+                education: JSON.stringify(education),
+                experiences: JSON.stringify(experiences),
+                projects: JSON.stringify(projects),
+                userTechnologies: JSON.stringify(userTechnologies),
+              }
+            }}
+            target="_blank"
+          >
+            <Button variant="outline">
+              <EyeIcon className="w-4 h-4 mr-2" />
+              Preview
+            </Button>
+          </Link>
           <Button onClick={handleDeploy}>
             <RocketIcon className="w-4 h-4 mr-2" />
             Deploy
@@ -117,13 +305,20 @@ export default function PortfolioEditor() {
         </div>
 
         <ScrollArea className="h-[100%] w-[100%]">
-          <PortfolioPage
-            UserInfoComponent={selectedComponents.userInfo}
-            WorkExperienceComponent={selectedComponents.workExperience}
-            EducationComponent={selectedComponents.education}
-            ProjectsComponent={selectedComponents.projects}
-            UserSkillsComponent={selectedComponents.userSkills}
-          />
+          {personalInfo && education && experiences && projects && userTechnologies && (
+            <PortfolioPage
+              UserInfoComponent={selectedComponents.userInfo}
+              WorkExperienceComponent={selectedComponents.workExperience}
+              EducationComponent={selectedComponents.education}
+              ProjectsComponent={selectedComponents.projects}
+              UserSkillsComponent={selectedComponents.userSkills}
+              personalInfo={personalInfo}
+              education={education}
+              experiences={experiences}
+              projects={projects}
+              userTechnologies={userTechnologies}
+            />
+          )}
         </ScrollArea>
       </main>
     </div>

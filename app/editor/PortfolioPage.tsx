@@ -1,51 +1,36 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
-import { useState, useRef } from 'react'
+import { useRef, useState } from 'react'
 import { motion, useScroll, useSpring, useInView } from 'framer-motion'
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Education, Project, UserInfo, Technology, WorkExperience } from '@/types/supabase-types'
 
-// Default Components as placeholders
-const DefaultUserInfoComponent = ({ personalInfo }: { personalInfo: UserInfo }) => (
-  <div>{personalInfo?.about_me}</div>
-)
-const DefaultWorkExperienceComponent = ({ experiences }: { experiences: WorkExperience[] }) => (
-  <div>{experiences.map(exp => <div key={exp.id}>{exp.company}</div>)}</div>
-)
-const DefaultEducationComponent = ({ education }: { education: Education[] }) => (
-  <div>{education.map(edu => <div key={edu.id}>{edu.university}</div>)}</div>
-)
-const DefaultProjectsComponent = ({ projects }: { projects: Project[] }) => (
-  <div>{projects.map(proj => <div key={proj.id}>{proj.name}</div>)}</div>
-)
-const DefaultUserSkillsComponent = ({ userTechnologies }: { userTechnologies: Technology[] }) => (
-  <div>{userTechnologies.map(tech => <div key={tech.id}>{tech.name}</div>)}</div>
-)
+interface PortfolioPageProps {
+  UserInfoComponent: React.ComponentType<{ personalInfo: UserInfo; handleScroll: (sectionId: string) => void }>
+  WorkExperienceComponent: React.ComponentType<{ experiences: WorkExperience[]; sectionRefs: any; sectionInView: any }>
+  EducationComponent: React.ComponentType<{ education: Education[]; sectionRefs: any; sectionInView: any }>
+  ProjectsComponent: React.ComponentType<{ projects: Project[]; sectionRefs: any; sectionInView: any }>
+  UserSkillsComponent: React.ComponentType<{ userTechnologies: Technology[]; sectionRefs: any; sectionInView: any }>
+  personalInfo: UserInfo;
+  education: Education[];
+  experiences: WorkExperience[];
+  projects: Project[];
+  userTechnologies: Technology[];
+}
 
-export default function PortfolioPage() {
-  const searchParams = useSearchParams()
-  
-  const UserInfoComponentName = searchParams.get('UserInfoComponent') || 'DefaultUserInfoComponent'
-  const WorkExperienceComponentName = searchParams.get('WorkExperienceComponent') || 'DefaultWorkExperienceComponent'
-  const EducationComponentName = searchParams.get('EducationComponent') || 'DefaultEducationComponent'
-  const ProjectsComponentName = searchParams.get('ProjectsComponent') || 'DefaultProjectsComponent'
-  const UserSkillsComponentName = searchParams.get('UserSkillsComponent') || 'DefaultUserSkillsComponent'
-
-  // Dynamically import components based on the query parameters
-  const UserInfoComponent = require(`./userInfo/${UserInfoComponentName}`).default || DefaultUserInfoComponent
-  const WorkExperienceComponent = require(`./experiences/${WorkExperienceComponentName}`).default || DefaultWorkExperienceComponent
-  const EducationComponent = require(`./education/${EducationComponentName}`).default || DefaultEducationComponent
-  const ProjectsComponent = require(`./projects/${ProjectsComponentName}`).default || DefaultProjectsComponent
-  const UserSkillsComponent = require(`./skills/${UserSkillsComponentName}`).default || DefaultUserSkillsComponent
-
-  const personalInfo = JSON.parse(searchParams.get('personalInfo') || '{}')
-  const education = JSON.parse(searchParams.get('education') || '[]')
-  const experiences = JSON.parse(searchParams.get('experiences') || '[]')
-  const projects = JSON.parse(searchParams.get('projects') || '[]')
-  const userTechnologies = JSON.parse(searchParams.get('userTechnologies') || '[]')
-
+export default function PortfolioPage({
+  UserInfoComponent,
+  WorkExperienceComponent,
+  EducationComponent,
+  ProjectsComponent,
+  UserSkillsComponent,
+  personalInfo,
+  education,
+  experiences,
+  projects,
+  userTechnologies
+}: PortfolioPageProps) {
   const [activeSection, setActiveSection] = useState('about')
   const containerRef = useRef(null)
   const { scrollYProgress } = useScroll({ target: containerRef })
