@@ -50,15 +50,6 @@ export default function UserInfoSection({
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="phone">Phone</Label>
-          <Input
-            id="phone"
-            placeholder="123-456-7890"
-            value={userInfo.phone || ''}
-            onChange={(e) => setUserInfo({ ...userInfo, phone: e.target.value })}
-          />
-        </div>
-        <div className="space-y-2">
           <Label htmlFor="github">GitHub</Label>
           <Input
             id="github"

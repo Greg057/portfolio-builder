@@ -3,7 +3,6 @@ export type UserInfo = {
     full_name: string;
     title: string | null;
     email: string;
-    phone: string | null;
     github: string | null;
     linkedin: string | null;
     about_me: string | null;

@@ -6,7 +6,7 @@ import { motion, useScroll, useSpring, useInView } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { GithubIcon, LinkedinIcon, MailIcon, ExternalLinkIcon, ChevronDownIcon } from 'lucide-react'
+import { Github, LinkedinIcon, MailIcon, ExternalLinkIcon, ChevronDownIcon } from 'lucide-react'
 import { Education, Project, UserInfo, Technology, WorkExperience, UserTechnology } from '@/types/supabase-types'
 import { createClient } from '@/utils/supabase/client'
 import { revalidatePath } from 'next/cache'
@@ -18,7 +18,6 @@ export default function PortfolioPage() {
   const [experiences, setExperiences] = useState<WorkExperience[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [userTechnologies, setUserTechnologies] = useState<Technology[]>([]);
-  const [loading, setLoading] = useState(true);
   
   const [activeSection, setActiveSection] = useState('about')
   const containerRef = useRef(null)
@@ -32,17 +31,17 @@ export default function PortfolioPage() {
   const sectionRefs = {
     about: useRef(null),
     experience: useRef(null),
-    projects: useRef(null),
     education: useRef(null),
-    userTechnologies: useRef(null),
+    projects: useRef(null),
+    skills: useRef(null),
   }
 
   const sectionInView = {
     about: useInView(sectionRefs.about, { once: true }),
     experience: useInView(sectionRefs.experience, { once: true }),
-    projects: useInView(sectionRefs.projects, { once: true }),
     education: useInView(sectionRefs.education, { once: true }),
-    userTechnologies: useInView(sectionRefs.userTechnologies, { once: true }),
+    projects: useInView(sectionRefs.projects, { once: true }),
+    skills: useInView(sectionRefs.skills, { once: true }),
   }
 
   useEffect(() => {
@@ -208,7 +207,6 @@ export default function PortfolioPage() {
           console.error("Error fetching user data:", error);
         }
       }
-      setLoading(false);
     };
 
     fetchData();
@@ -245,7 +243,7 @@ export default function PortfolioPage() {
                 </a>
                 {personalInfo?.github && (
                   <a href={personalInfo.github} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                    <GithubIcon size={24} />
+                    <Github size={24} />
                   </a>
                 )}
                 {personalInfo?.linkedin && (
@@ -283,7 +281,7 @@ export default function PortfolioPage() {
 
       <nav className="sticky top-0 bg-background/80 backdrop-blur-md z-40 py-4 mb-12">
         <ul className="flex justify-center space-x-8">
-          {['about', 'experience', 'projects', 'education', 'userTechnologies'].map((section) => (
+          {['about', 'experience', 'education', 'projects', 'skills'].map((section) => (
             <li key={section}>
               <Button
                 variant="ghost"
@@ -350,6 +348,41 @@ export default function PortfolioPage() {
           </motion.div>
         </section>
 
+        <section id="education" ref={sectionRefs.education} className="mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={sectionInView.education ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl font-bold mb-8">Education</h2>
+            <div className="space-y-8">
+              {education.map((edu, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <Card className="bg-card">
+                    <CardHeader>
+                      <CardTitle className="text-xl">{edu.university}</CardTitle>
+                      <CardDescription>
+                        {edu.degree} | {edu.start_year}-{edu.end_year}
+                      </CardDescription>
+                    </CardHeader>
+                    {/* Render description only if it exists */}
+                    {edu.description && (
+                      <CardContent className="prose prose-lg dark:prose-invert">
+                        <p>{edu.description}</p>
+                      </CardContent>
+                    )}
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </section>
+
         <section id="projects" ref={sectionRefs.projects} className="mb-20">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -403,7 +436,7 @@ export default function PortfolioPage() {
                               rel="noopener noreferrer"
                               className="flex items-center justify-center"
                             >
-                              GitHub <GithubIcon className="ml-2 h-4 w-4" />
+                              GitHub <Github className="ml-2 h-4 w-4" />
                             </a>
                           </Button>
                         )}
@@ -416,45 +449,10 @@ export default function PortfolioPage() {
           </motion.div>
         </section>
 
-        <section id="education" ref={sectionRefs.education} className="mb-20">
+        <section id="skills" ref={sectionRefs.skills}>
           <motion.div
             initial={{ opacity: 0, y: 50 }}
-            animate={sectionInView.education ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-3xl font-bold mb-8">Education</h2>
-            <div className="space-y-8">
-              {education.map((edu, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <Card className="bg-card">
-                    <CardHeader>
-                      <CardTitle className="text-xl">{edu.university}</CardTitle>
-                      <CardDescription>
-                        {edu.degree} | {edu.start_year}-{edu.end_year}
-                      </CardDescription>
-                    </CardHeader>
-                    {/* Render description only if it exists */}
-                    {edu.description && (
-                      <CardContent className="prose prose-lg dark:prose-invert">
-                        <p>{edu.description}</p>
-                      </CardContent>
-                    )}
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </section>
-
-        <section id="userTechnologies" ref={sectionRefs.userTechnologies}>
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={sectionInView.userTechnologies ? { opacity: 1, y: 0 } : {}}
+            animate={sectionInView.skills ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5 }}
           >
             <h2 className="text-3xl font-bold mb-8">Skills</h2>
