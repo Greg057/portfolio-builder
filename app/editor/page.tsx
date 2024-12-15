@@ -7,35 +7,44 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { EyeIcon, RocketIcon, SaveIcon } from 'lucide-react'
 import PortfolioPage from '../portfolio/page'
+import UserInfo1 from '../portfolio/userInfo/UserInfo1'
+import UserInfo2 from '../portfolio/userInfo/UserInfo2'
+import Experiences1 from '../portfolio/experiences/Experiences1'
+import Education1 from '../portfolio/education/Education1'
+import Projects1 from '../portfolio/projects/Projects1'
+import Skills1 from '../portfolio/skills/Skills1'
 
-// Placeholder components for the preview
-const Component1 = () => <div className="p-4 border rounded">Template for Component 1</div>
-const Component2 = () => <div className="p-4 border rounded">Template for Component 2</div>
+const userInfoComponents = [UserInfo1, UserInfo2]
+const workExperienceComponents = [Experiences1]
+const educationComponents = [Education1]
+const projectsComponents = [Projects1]
+const userSkillsComponents = [Skills1]
 
 const sections = [
-  { name: 'User Info', key: 'userInfo' },
-  { name: 'Work Experience', key: 'workExperience' },
-  { name: 'Education', key: 'education' },
-  { name: 'Projects', key: 'projects' },
-  { name: 'User Skills', key: 'userSkills' },
+  { name: 'User Info', key: 'userInfo', components: userInfoComponents },
+  { name: 'Work Experience', key: 'workExperience', components: workExperienceComponents },
+  { name: 'Education', key: 'education', components: educationComponents },
+  { name: 'Projects', key: 'projects', components: projectsComponents },
+  { name: 'User Skills', key: 'userSkills', components: userSkillsComponents },
 ]
 
 export default function PortfolioEditor() {
   const { toast } = useToast()
   const [selectedComponents, setSelectedComponents] = useState({
-    userInfo: 'Component1',
-    workExperience: 'Component1',
-    education: 'Component1',
-    projects: 'Component1',
-    userSkills: 'Component1',
+    userInfo: UserInfo1,
+    workExperience: Experiences1,
+    education: Education1,
+    projects: Projects1,
+    userSkills: Skills1,
   })
 
-  const handleComponentChange = (section: string, component: string) => {
-    setSelectedComponents(prev => ({ ...prev, [section]: component }))
+  const handleComponentChange = (section: string, componentName: string) => {
+    const componentList = sections.find(s => s.key === section)?.components || []
+    const selectedComponent = componentList.find(c => c.name === componentName) || componentList[0]
+    setSelectedComponents(prev => ({ ...prev, [section]: selectedComponent }))
   }
 
   const handleSave = () => {
-    // Save logic here (e.g., to sessionStorage or database)
     console.log('Saving configuration:', selectedComponents)
     toast({
       title: "Configuration Saved",
@@ -44,7 +53,6 @@ export default function PortfolioEditor() {
   }
 
   const handlePreview = () => {
-    // Navigate to preview page logic here
     console.log('Navigating to preview page')
     toast({
       title: "Previewing Portfolio",
@@ -53,7 +61,6 @@ export default function PortfolioEditor() {
   }
 
   const handleDeploy = () => {
-    // Deploy logic here
     console.log('Deploying portfolio')
     toast({
       title: "Portfolio Deployed",
@@ -90,15 +97,18 @@ export default function PortfolioEditor() {
                   {section.name} UI Component
                 </label>
                 <Select
-                  value={selectedComponents[section.key as keyof typeof selectedComponents]}
+                  value={selectedComponents[section.key as keyof typeof selectedComponents].name}
                   onValueChange={(value) => handleComponentChange(section.key, value)}
                 >
                   <SelectTrigger id={section.key}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Component1">Component 1</SelectItem>
-                    <SelectItem value="Component2">Component 2</SelectItem>
+                    {section.components.map((Component, index) => (
+                      <SelectItem key={index} value={Component.name}>
+                        {Component.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -107,7 +117,13 @@ export default function PortfolioEditor() {
         </div>
 
         <ScrollArea className="h-[100%] w-[100%]">
-          <PortfolioPage />
+          <PortfolioPage
+            UserInfoComponent={selectedComponents.userInfo}
+            WorkExperienceComponent={selectedComponents.workExperience}
+            EducationComponent={selectedComponents.education}
+            ProjectsComponent={selectedComponents.projects}
+            UserSkillsComponent={selectedComponents.userSkills}
+          />
         </ScrollArea>
       </main>
     </div>

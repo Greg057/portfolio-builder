@@ -1,18 +1,21 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import Image from 'next/image'
 import { motion, useScroll, useSpring, useInView } from 'framer-motion'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Github, LinkedinIcon, MailIcon, ExternalLinkIcon, ChevronDownIcon } from 'lucide-react'
 import { Education, Project, UserInfo, Technology, WorkExperience, UserTechnology } from '@/types/supabase-types'
 import { createClient } from '@/utils/supabase/client'
-import { revalidatePath } from 'next/cache'
 
+interface PortfolioPageProps {
+  UserInfoComponent: React.ComponentType<{ personalInfo: UserInfo; handleScroll: (sectionId: string) => void }>
+  WorkExperienceComponent: React.ComponentType<{ experiences: WorkExperience[]; sectionRefs: any; sectionInView: any }>
+  EducationComponent: React.ComponentType<{ education: Education[]; sectionRefs: any; sectionInView: any }>
+  ProjectsComponent: React.ComponentType<{ projects: Project[]; sectionRefs: any; sectionInView: any }>
+  UserSkillsComponent: React.ComponentType<{ userTechnologies: Technology[]; sectionRefs: any; sectionInView: any }>
+}
 
-export default function PortfolioPage() {
+export default function PortfolioPage({ UserInfoComponent, WorkExperienceComponent, EducationComponent, ProjectsComponent, UserSkillsComponent }: PortfolioPageProps) {
   const [personalInfo, setPersonalInfo] = useState<UserInfo>();
   const [education, setEducation] = useState<Education[]>([]);
   const [experiences, setExperiences] = useState<WorkExperience[]>([]);
@@ -226,59 +229,10 @@ export default function PortfolioPage() {
         style={{ scaleX, transformOrigin: "0%" }}
       />
       
-      <header className="py-20 text-center relative overflow-hidden">
-        <motion.div
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative z-10"
-        >
-          {personalInfo ? (
-            <>
-              <h1 className="text-6xl font-bold mb-4">{personalInfo.full_name}</h1>
-              <p className="text-2xl mb-8">{personalInfo.title || ""}</p>
-              <div className="flex justify-center space-x-6">
-                <a href={`mailto:${personalInfo.email}`} className="hover:text-primary transition-colors">
-                  <MailIcon size={24} />
-                </a>
-                {personalInfo?.github && (
-                  <a href={personalInfo.github} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                    <Github size={24} />
-                  </a>
-                )}
-                {personalInfo?.linkedin && (
-                  <a href={personalInfo.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                    <LinkedinIcon size={24} />
-                  </a>
-                )}
-              </div>
-            </>
-          ) : (
-            <p>Loading personal info...</p>
-          )}
-        </motion.div>
-        <motion.div
-          className="absolute inset-0 z-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.5 }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 blur-3xl" />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1, duration: 0.8 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        >
-          <ChevronDownIcon 
-            size={40} 
-            className="animate-bounce cursor-pointer"
-            onClick={() => handleScroll('about')}
-          />
-        </motion.div>
-      </header>
-
+      {personalInfo && (
+        <UserInfoComponent personalInfo={personalInfo} handleScroll={handleScroll} />
+      )} 
+    
       <nav className="sticky top-0 bg-background/80 backdrop-blur-md z-40 py-4 mb-12">
         <ul className="flex justify-center space-x-8">
           {['about', 'experience', 'education', 'projects', 'skills'].map((section) => (
@@ -314,170 +268,22 @@ export default function PortfolioPage() {
           </motion.div>
         </section>
 
-        <section id="experience" ref={sectionRefs.experience} className="mb-20">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={sectionInView.experience ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-3xl font-bold mb-8">Work Experience</h2>
-            <div className="space-y-8">
-              {experiences.map((exp, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <Card className="bg-card overflow-hidden">
-                    <CardHeader className="flex flex-row items-center space-x-4 pb-4">
-                      <div>
-                        <CardTitle className="text-xl">{exp.company}</CardTitle>
-                        <CardDescription>{exp.position} | {exp.start_date}-{exp.end_date}</CardDescription>
-                      </div>
-                    </CardHeader>
-                    {exp.description && (
-                      <CardContent>
-                        <p>{exp.description}</p>
-                      </CardContent>
-                    )}
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </section>
+        {experiences && (
+          <WorkExperienceComponent experiences={experiences} sectionRefs={sectionRefs} sectionInView={sectionInView}/>
+        )} 
 
-        <section id="education" ref={sectionRefs.education} className="mb-20">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={sectionInView.education ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-3xl font-bold mb-8">Education</h2>
-            <div className="space-y-8">
-              {education.map((edu, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <Card className="bg-card">
-                    <CardHeader>
-                      <CardTitle className="text-xl">{edu.university}</CardTitle>
-                      <CardDescription>
-                        {edu.degree} | {edu.start_year}-{edu.end_year}
-                      </CardDescription>
-                    </CardHeader>
-                    {/* Render description only if it exists */}
-                    {edu.description && (
-                      <CardContent className="prose prose-lg dark:prose-invert">
-                        <p>{edu.description}</p>
-                      </CardContent>
-                    )}
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </section>
+        {education && (
+          <EducationComponent education={education} sectionRefs={sectionRefs} sectionInView={sectionInView}/>
+        )} 
 
-        <section id="projects" ref={sectionRefs.projects} className="mb-20">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={sectionInView.projects ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-3xl font-bold mb-8">Projects</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              {projects.map((project, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Card className="bg-card h-full flex flex-col">
-                    <CardHeader>
-                      <CardTitle className="text-xl">{project.name}</CardTitle>
-                    </CardHeader>
-                      <CardContent className="flex-grow">
-                        <p className="mb-4">{project.description}</p>
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {project.technologyNames?.map((tech, i) => (
-                            <Badge key={i} variant="secondary">
-                              {tech}
-                            </Badge>
-                          ))}
-                        </div>
-                      </CardContent>
-                    <CardContent className="pt-0">
-                      <div className="flex justify-between gap-4">
-                        {project.live_link && (
-                          <Button asChild variant="outline" className="w-full">
-                            <a
-                              href={project.live_link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center justify-center"
-                            >
-                              View Project <ExternalLinkIcon className="ml-2 h-4 w-4" />
-                            </a>
-                          </Button>
-                        )}
-                        {project.github_link && (
-                          <Button asChild variant="outline" className="w-full">
-                            <a
-                              href={project.github_link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center justify-center"
-                            >
-                              GitHub <Github className="ml-2 h-4 w-4" />
-                            </a>
-                          </Button>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </section>
+        {projects && (
+          <ProjectsComponent projects={projects} sectionRefs={sectionRefs} sectionInView={sectionInView}/>
+        )} 
 
-        <section id="skills" ref={sectionRefs.skills}>
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={sectionInView.skills ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-3xl font-bold mb-8">Skills</h2>
-            <div className="flex flex-wrap gap-4">
-              {userTechnologies.length > 0 ? (
-                userTechnologies.map((skill, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <Badge variant="outline" className="text-lg py-2 px-4">
-                      {skill.name}
-                    </Badge>
-                  </motion.div>
-                ))
-              ) : (
-                <p>No skills to display</p> // Handle case where no technologies are available
-              )}
-            </div>
-          </motion.div>
-        </section>
+        {userTechnologies && (
+          <UserSkillsComponent userTechnologies={userTechnologies} sectionRefs={sectionRefs} sectionInView={sectionInView}/>
+        )} 
+
       </main>
     </div>
   )
