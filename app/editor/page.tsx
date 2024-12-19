@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useToast } from "@/components/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -16,6 +15,11 @@ import Skills1 from '../portfolio/skills/Skills1'
 import Link from 'next/link'
 import { Education, Project, UserInfo, Technology, WorkExperience, UserTechnology } from '@/types/supabase-types'
 import PortfolioPage from './PortfolioPage'
+import {
+  Dialog,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import AuthModal from './AuthModal'
 
 const userInfoComponents = [UserInfo1, UserInfo2]
 const workExperienceComponents = [Experiences1]
@@ -38,7 +42,6 @@ export default function PortfolioEditor() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [userTechnologies, setUserTechnologies] = useState<Technology[]>([]);
 
-  const { toast } = useToast()
   const [selectedComponents, setSelectedComponents] = useState({
     userInfo: UserInfo1,
     workExperience: Experiences1,
@@ -53,20 +56,37 @@ export default function PortfolioEditor() {
     setSelectedComponents(prev => ({ ...prev, [section]: selectedComponent }))
   }
 
-  const handleSave = () => {
-    console.log('Saving configuration:', selectedComponents)
-    toast({
-      title: "Configuration Saved",
-      description: "Your portfolio configuration has been saved.",
-    })
+  const handleSave = async () => {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+  
+    if (!user) {
+      
+      return;
+    }
+
+    try {
+      const { error: saveError } = await supabase.from('portfolio_data').upsert({
+        user_id: user.id,
+        user_info_component: selectedComponents.userInfo.name,
+        education_component: selectedComponents.education.name,
+        experiences_component: selectedComponents.workExperience.name,
+        projects_component: selectedComponents.projects.name,
+        skills_component: selectedComponents.userSkills.name,
+        is_saved: true
+      });
+      if (saveError) throw saveError;
+  
+      alert("Configuration saved successfully!");
+    } catch (error) {
+      console.error("Error saving:", error);
+    }
   }
 
   const handleDeploy = () => {
     console.log('Deploying portfolio')
-    toast({
-      title: "Portfolio Deployed",
-      description: "Your portfolio is now live!",
-    })
   }
 
   useEffect(() => {
@@ -240,10 +260,15 @@ export default function PortfolioEditor() {
   return (
     <div className="flex flex-col h-screen">
       <header className="flex justify-between items-center p-4 border-b">
-        <Button onClick={handleSave}>
-          <SaveIcon className="w-4 h-4 mr-2" />
-          Save
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button onClick={handleSave}>
+              <SaveIcon className="w-4 h-4 mr-2" />
+              Save
+            </Button>
+          </DialogTrigger>
+          <AuthModal />
+        </Dialog>
         <div className="flex space-x-2">
           <Link
             href={{
