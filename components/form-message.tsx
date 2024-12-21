@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { Button } from "./ui/button";
+
 export type Message =
   | { success: string }
   | { error: string }
@@ -18,6 +21,13 @@ export function FormMessage({ message }: { message: Message }) {
       )}
       {"message" in message && (
         <div className="text-foreground border-l-2 px-4">{message.message}</div>
+      )}
+      {"success" in message && (
+        <Link href="/redirect-after-sign-in">
+          <Button>
+            Continue
+          </Button>
+        </Link>
       )}
     </div>
   );

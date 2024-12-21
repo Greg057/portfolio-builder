@@ -63,6 +63,18 @@ export default function PortfolioEditor() {
     } = await supabase.auth.getUser();
   
     if (!user) {
+      sessionStorage.removeItem("unsavedConfig");
+      // Save the current configuration in sessionStorage
+      sessionStorage.setItem(
+        "unsavedConfig",
+        JSON.stringify({
+          user_info_component: selectedComponents.userInfo.name,
+          education_component: selectedComponents.education.name,
+          experiences_component: selectedComponents.workExperience.name,
+          projects_component: selectedComponents.projects.name,
+          skills_component: selectedComponents.userSkills.name,
+        })
+      );
       
       return;
     }
@@ -88,6 +100,38 @@ export default function PortfolioEditor() {
   const handleDeploy = () => {
     console.log('Deploying portfolio')
   }
+
+  useEffect(() => {
+    const fetchUnsavedConfig = async () => {
+      const unsavedConfig = sessionStorage.getItem("unsavedConfig");
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+    
+      if (unsavedConfig && user) {
+        const parsedConfig = JSON.parse(unsavedConfig);
+    
+        // Restore the unsaved configuration
+        setSelectedComponents({
+          userInfo: parsedConfig.user_info_component,
+          education: parsedConfig.education_component,
+          workExperience: parsedConfig.experiences_component,
+          projects: parsedConfig.projects_component,
+          userSkills: parsedConfig.skills_component
+        });
+    
+        // Clear sessionStorage after restoring
+        sessionStorage.removeItem("unsavedConfig");
+    
+        alert("Your unsaved changes have been restored.");
+
+        handleSave()
+
+      }
+    }
+
+    fetchUnsavedConfig()
+
+  }, []); 
 
   useEffect(() => {
     const fetchData = async () => {
