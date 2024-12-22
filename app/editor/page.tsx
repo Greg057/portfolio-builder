@@ -13,7 +13,7 @@ import Education1 from '../portfolio/education/Education1'
 import Projects1 from '../portfolio/projects/Projects1'
 import Skills1 from '../portfolio/skills/Skills1'
 import Link from 'next/link'
-import { Education, Project, UserInfo, Technology, WorkExperience, UserTechnology } from '@/types/supabase-types'
+import { Education, Project, UserInfo, Technology, WorkExperience, UserTechnology, Payload } from '@/types/supabase-types'
 import PortfolioPage from './PortfolioPage'
 import {
   Dialog,
@@ -42,6 +42,7 @@ export default function PortfolioEditor() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [userTechnologies, setUserTechnologies] = useState<Technology[]>([]);
 
+
   const [selectedComponents, setSelectedComponents] = useState({
     userInfo: UserInfo1,
     workExperience: Experiences1,
@@ -56,7 +57,7 @@ export default function PortfolioEditor() {
     setSelectedComponents(prev => ({ ...prev, [section]: selectedComponent }))
   }
 
-  const handleSave = async () => {
+  const handleSave = async (config: any = null) => {
     const supabase = createClient();
     const {
       data: { user },
@@ -81,22 +82,40 @@ export default function PortfolioEditor() {
       return;
     }
 
-    try {
-      const { error: saveError } = await supabase.from('portfolio_data').upsert({
-        user_id: user.id,
-        user_info_component: selectedComponents.userInfo.name,
-        education_component: selectedComponents.education.name,
-        experiences_component: selectedComponents.workExperience.name,
-        projects_component: selectedComponents.projects.name,
-        skills_component: selectedComponents.userSkills.name,
-        is_saved: true
-      });
-      if (saveError) throw saveError;
-  
-      console.log("portfolio data added to SUPABASE since user")
-    } catch (error) {
-      console.error("Error saving:", error);
+    if (config) {
+      try {
+        const { error: saveError } = await supabase.from('portfolio_data').upsert({
+          user_id: user.id,
+          user_info_component: config.user_info_component,
+          education_component: config.education_component,
+          experiences_component: config.experiences_component,
+          projects_component: config.projects_component,
+          skills_component: config.skills_component,
+          is_saved: true
+        });
+        if (saveError) throw saveError;
+      } catch (error) {
+        console.error("Error saving:", error);
+      }
+
+    } else {
+      try {
+        const { error: saveError } = await supabase.from('portfolio_data').upsert({
+          user_id: user.id,
+          user_info_component: selectedComponents.userInfo.name,
+          education_component: selectedComponents.education.name,
+          experiences_component: selectedComponents.workExperience.name,
+          projects_component: selectedComponents.projects.name,
+          skills_component: selectedComponents.userSkills.name,
+          is_saved: true
+        });
+        if (saveError) throw saveError;
+      } catch (error) {
+        console.error("Error saving:", error);
+      }
     }
+
+    
   }
 
   const handleDeploy = () => {
@@ -104,31 +123,33 @@ export default function PortfolioEditor() {
   }
 
   useEffect(() => {
+    const fetchConfig = async () => {
+      const portfolioSessionData = sessionStorage.getItem("portfolioSessionData");
+  
+      if (portfolioSessionData) {
+        const parsedConfig = JSON.parse(portfolioSessionData);
+  
+        setSelectedComponents({
+          userInfo: require(`../portfolio/userInfo/${parsedConfig.user_info_component}`).default,
+          education: require(`../portfolio/education/${parsedConfig.education_component}`).default,
+          workExperience: require(`../portfolio/experiences/${parsedConfig.experiences_component}`).default,
+          projects: require(`../portfolio/projects/${parsedConfig.projects_component}`).default,
+          userSkills: require(`../portfolio/skills/${parsedConfig.skills_component}`).default,
+        });
+  
+        console.log("portfolioSessionData retrieved, set Selected Components and deleted");
+        sessionStorage.removeItem("portfolioSessionData");
+    
+        await handleSave(parsedConfig); // Await the asynchronous handleSave function
+      }
+    };
+
     const fetchData = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       const userId = user?.id;
 
       const userSessionData = sessionStorage.getItem("userSessionData");
-      const portfolioSessionData = sessionStorage.getItem("portfolioSessionData");
-    
-      if (portfolioSessionData) {
-        const parsedConfig = JSON.parse(portfolioSessionData);
-
-        setSelectedComponents({
-          userInfo: require(`../portfolio/userInfo/${parsedConfig.user_info_component}`).default,
-          education: require(`../portfolio/education/${parsedConfig.education_component}`).default,
-          workExperience: require(`../portfolio/experiences/${parsedConfig.experiences_component}`).default,
-          projects: require(`../portfolio/projects/${parsedConfig.projects_component}`).default,
-          userSkills: require(`../portfolio/skills/${parsedConfig.skills_component}`).default
-        });
-
-        console.log("portfolioSessionData retrieved, setted Selected Components and deleted")
-    
-        sessionStorage.removeItem("portfolioSessionData");
-    
-        handleSave()
-      } 
 
       if (userSessionData && !userId) {
         try {
@@ -174,6 +195,47 @@ export default function PortfolioEditor() {
           console.error("Error parsing sessionStorage data:", error);
         }
       } 
+
+      if (userSessionData && userId) {
+        // Parse session data from sessionStorage
+        const sessionData: Payload = JSON.parse(userSessionData);
+
+        const dbPayload: Payload = {
+          userInfo: { ...sessionData.userInfo, user_id: userId },
+          educations: sessionData.educations.map((edu) => ({ ...edu, user_id: userId })),
+          experiences: sessionData.experiences.map((exp) => ({ ...exp, user_id: userId })),
+          projects: sessionData.projects.map((proj) => ({ ...proj, user_id: userId })),
+          projectTechnologies: sessionData.projectTechnologies,
+          userTechnologies: sessionData.userTechnologies.map((tech) => ({ ...tech, user_id: userId }))
+        };
+      
+        try {
+          // Insert data into Supabase tables sequentially
+          const { error: userInfoError } = await supabase.from('personal_info').insert(dbPayload.userInfo);
+          if (userInfoError) throw userInfoError;
+      
+          const { error: educationsError } = await supabase.from('education').insert(dbPayload.educations);
+          if (educationsError) throw educationsError;
+      
+          const { error: experiencesError } = await supabase.from('work_experience').insert(dbPayload.experiences);
+          if (experiencesError) throw experiencesError;
+      
+          const { error: projectsError } = await supabase.from('projects').insert(dbPayload.projects);
+          if (projectsError) throw projectsError;
+      
+          const { error: projectTechnologiesError } = await supabase.from('project_technologies').insert(dbPayload.projectTechnologies);
+          if (projectTechnologiesError) throw projectTechnologiesError;
+      
+          const { error: userTechnologiesError } = await supabase.from('user_technologies').insert(dbPayload.userTechnologies);
+          if (userTechnologiesError) throw userTechnologiesError;
+      
+          // Log success and clear session storage
+          console.log('Session data successfully migrated to Supabase for authenticated user.');
+          sessionStorage.removeItem('userSessionData'); // Clear session data to avoid duplicate inserts
+        } catch (error) {
+          console.error('Error migrating session data to Supabase:', error);
+        }
+      }
       
       if (userId) {
         try {
@@ -345,16 +407,22 @@ export default function PortfolioEditor() {
       }
     }
 
-    fetchData()
-
-  }, []); 
+    const fetchAndSaveAll = async () => {
+      await fetchConfig(); // Call the async function
+      await fetchData()
+    }
+    
+    fetchAndSaveAll()
+    
+  }, []);
+  
 
   return (
     <div className="flex flex-col h-screen">
       <header className="flex justify-between items-center p-4 border-b">
         <Dialog>
           <DialogTrigger asChild>
-            <Button onClick={handleSave}>
+            <Button onClick={() => handleSave()}>
               <SaveIcon className="w-4 h-4 mr-2" />
               Save
             </Button>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
-import { UserInfo, WorkExperience, Education, Project, UserTechnology } from '@/types/supabase-types'
+import { UserInfo, WorkExperience, Education, Project, UserTechnology, Payload } from '@/types/supabase-types'
 import EducationSection from './EducationSection'
 import UserInfoSection from './UserInfoSection'
 import ExperienceSection from './ExperienceSection'
@@ -10,7 +10,7 @@ import ProjectSection from './ProjectSection'
 import TechnologySection from './TechnologySection'
 import { createClient } from '@/utils/supabase/client'
 import { v4 as uuidv4 } from 'uuid';
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 
 const initialAvailableTechnologies = [
   { value: 1, label: 'JavaScript' },
@@ -33,6 +33,8 @@ export default function OnboardingPage() {
   const [experiences, setExperiences] = useState<WorkExperience[]>([{ company: '', position: '', start_date: '', end_date: '', description: null }])
   const [projects, setProjects] = useState<Project[]>([{ id: uuidv4(), name: '', description: '', github_link: '', live_link: '', technologies: [], availableTechnologies: initialAvailableTechnologies }])
   const [userTechnologies, setUserTechnologies] = useState<UserTechnology[]>([{ technology_id: null }])
+
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,25 +105,24 @@ export default function OnboardingPage() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        const sessionPayload = {
-          userInfo: { ...payload.userInfo, user_id: null }, 
-          educations: payload.educations.map((edu) => ({ ...edu, user_id: null })), 
-          experiences: payload.experiences.map((exp) => ({ ...exp, user_id: null })), 
-          projects: payload.projects.map((proj) => ({ ...proj.project, user_id: null })), 
+        const sessionPayload: Payload = {
+          userInfo: { ...payload.userInfo, user_id: '' }, 
+          educations: payload.educations.map((edu) => ({ ...edu, user_id: '' })), 
+          experiences: payload.experiences.map((exp) => ({ ...exp, user_id: '' })), 
+          projects: payload.projects.map((proj) => ({ ...proj.project, user_id: '' })), 
           projectTechnologies: payload.projects.flatMap((proj) => proj.projectTechnologies), 
-          userTechnologies: userTechnologies.map((tech) => ({ technology_id: tech.technology_id, user_id: null }))
+          userTechnologies: userTechnologies.map((tech) => ({ technology_id: tech.technology_id, user_id: '' }))
         };
-        // Anonymous user: Save data to sessionStorage
-        sessionStorage.setItem('userSessionData', JSON.stringify(sessionPayload));
-        console.log('Data saved to sessionStorage for anonymous user');
-        alert('Your data has been temporarily saved. Please sign up to save it permanently!');
 
-        redirect('/portfolio-editor')
+        sessionStorage.setItem('userSessionData', JSON.stringify(sessionPayload));
+        console.log('Data saved to userSessionData since anonymous user');
+
+        router.push('/editor')
 
       } else {
         const userId = user.id;
 
-        const dbPayload = {
+        const dbPayload: Payload = {
           userInfo: { ...payload.userInfo, user_id: userId },
           educations: payload.educations.map((edu) => ({ ...edu, user_id: userId })),
           experiences: payload.experiences.map((exp) => ({ ...exp, user_id: userId })),
@@ -149,17 +150,14 @@ export default function OnboardingPage() {
         if (userTechnologiesError) throw userTechnologiesError;
 
         console.log('Data successfully saved to Supabase for authenticated user');
-        alert('Your data has been successfully saved!');
 
-        redirect('/portfolio-editor')
+        router.push('/editor')
       }
     } catch (error) {
       console.error('Error while saving data:', error);
-      alert('An error occurred while saving your data. Please try again.');
     }
   };
   
-
   const validateForm = () => {
     const errors: string[] = [];
   

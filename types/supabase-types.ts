@@ -45,6 +45,11 @@ export type Technology = {
     name: string;
 }
 
+export type ProjectTechnology = {
+    project_id: string;
+    technology_id: number;
+}
+
 export type UserTechnology = {
     user_id?: string;
     technology_id: number | null;
@@ -66,15 +71,27 @@ export type PortfolioData = {
     deployed_at: string | null; // Timestamp of deployment
     updated_at: string; // Auto-updated timestamp
     created_at: string; // Creation timestamp
+    user_info_component: string;
+    education_component: string;
+    experiences_component: string;
+    projects_component: string;
+    skills_component: string;
 };
 
-export type PortfolioSection = {
-    id?: string; // Primary key
-    user_id?: string; // References `auth.users.id`
-    section_name: string; // Name of the portfolio section (e.g., "projects", "skills")
-    component_choice: string; // UI component chosen for this section
-    additional_settings: Record<string, any> | null; // JSON for per-section settings
-    created_at: string; // Creation timestamp
-    updated_at: string; // Last updated timestamp
-};
+export type Payload = {
+    userInfo: UserInfo;
+    educations: Education[];
+    experiences: WorkExperience[];
+    projects: {
+        id: string; // Primary key
+        user_id?: string; // References `auth.users.id`
+        name: string;
+        description: string | null;
+        github_link: string | null;
+        live_link: string | null;
+    }[];
+    projectTechnologies: ProjectTechnology[];
+    userTechnologies: UserTechnology[];
+}
+
   
