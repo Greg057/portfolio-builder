@@ -63,10 +63,10 @@ export default function PortfolioEditor() {
     } = await supabase.auth.getUser();
   
     if (!user) {
-      sessionStorage.removeItem("unsavedConfig");
+      sessionStorage.removeItem("portfolioSessionData");
       // Save the current configuration in sessionStorage
       sessionStorage.setItem(
-        "unsavedConfig",
+        "portfolioSessionData",
         JSON.stringify({
           user_info_component: selectedComponents.userInfo.name,
           education_component: selectedComponents.education.name,
@@ -75,6 +75,8 @@ export default function PortfolioEditor() {
           skills_component: selectedComponents.userSkills.name,
         })
       );
+
+      console.log("portfolioSessionData added since not user")
       
       return;
     }
@@ -91,7 +93,7 @@ export default function PortfolioEditor() {
       });
       if (saveError) throw saveError;
   
-      alert("Configuration saved successfully!");
+      console.log("portfolio data added to SUPABASE since user")
     } catch (error) {
       console.error("Error saving:", error);
     }
@@ -102,47 +104,35 @@ export default function PortfolioEditor() {
   }
 
   useEffect(() => {
-    const fetchUnsavedConfig = async () => {
-      const unsavedConfig = sessionStorage.getItem("unsavedConfig");
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-    
-      if (unsavedConfig && user) {
-        const parsedConfig = JSON.parse(unsavedConfig);
-    
-        // Restore the unsaved configuration
-        setSelectedComponents({
-          userInfo: parsedConfig.user_info_component,
-          education: parsedConfig.education_component,
-          workExperience: parsedConfig.experiences_component,
-          projects: parsedConfig.projects_component,
-          userSkills: parsedConfig.skills_component
-        });
-    
-        // Clear sessionStorage after restoring
-        sessionStorage.removeItem("unsavedConfig");
-    
-        alert("Your unsaved changes have been restored.");
-
-        handleSave()
-
-      }
-    }
-
-    fetchUnsavedConfig()
-
-  }, []); 
-
-  useEffect(() => {
     const fetchData = async () => {
-      const sessionData = sessionStorage.getItem("portfolioData");
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       const userId = user?.id;
 
-      if (sessionData && !userId) {
+      const userSessionData = sessionStorage.getItem("userSessionData");
+      const portfolioSessionData = sessionStorage.getItem("portfolioSessionData");
+    
+      if (portfolioSessionData) {
+        const parsedConfig = JSON.parse(portfolioSessionData);
+
+        setSelectedComponents({
+          userInfo: require(`../portfolio/userInfo/${parsedConfig.user_info_component}`).default,
+          education: require(`../portfolio/education/${parsedConfig.education_component}`).default,
+          workExperience: require(`../portfolio/experiences/${parsedConfig.experiences_component}`).default,
+          projects: require(`../portfolio/projects/${parsedConfig.projects_component}`).default,
+          userSkills: require(`../portfolio/skills/${parsedConfig.skills_component}`).default
+        });
+
+        console.log("portfolioSessionData retrieved, setted Selected Components and deleted")
+    
+        sessionStorage.removeItem("portfolioSessionData");
+    
+        handleSave()
+      } 
+
+      if (userSessionData && !userId) {
         try {
-          const data = JSON.parse(sessionData);
+          const data = JSON.parse(userSessionData);
       
           // Set basic data from sessionStorage
           setPersonalInfo(data.userInfo || null);
@@ -176,11 +166,16 @@ export default function PortfolioEditor() {
           } else {
             setUserTechnologies([]);
           }
+
+          console.log("user session data retrieved since not user")
+
+
         } catch (error) {
           console.error("Error parsing sessionStorage data:", error);
         }
-      } else if (userId) {
-        // Authenticated user: Load data from Supabase
+      } 
+      
+      if (userId) {
         try {
           const { data: userInfo, error: userInfoError } = await supabase
             .from("personal_info")
@@ -285,21 +280,74 @@ export default function PortfolioEditor() {
             }
           }
 
-          // Update state with fetched data
+          const { data: userInfoComponent, error: userInfoComponentError } = await supabase
+            .from("portfolio_data")
+            .select("user_info_component")
+            .eq("user_id", userId)
+            .single()
+
+          const { data: educationComponent, error: educationComponentError } = await supabase
+            .from("portfolio_data")
+            .select("education_component")
+            .eq("user_id", userId)
+            .single()
+
+          const { data: experiencesComponent, error: experiencesComponentError } = await supabase
+            .from("portfolio_data")
+            .select("experiences_component")
+            .eq("user_id", userId)
+            .single()
+
+          const { data: projectsComponent, error: projectsComponentError } = await supabase
+            .from("portfolio_data")
+            .select("projects_component")
+            .eq("user_id", userId)
+            .single()
+
+          const { data: skillsComponent, error: skillsComponentError } = await supabase
+            .from("portfolio_data")
+            .select("skills_component")
+            .eq("user_id", userId)
+            .single()
+
+          if (userInfoComponentError || educationComponentError || experiencesComponentError || projectsComponentError || skillsComponentError) {
+            console.error(
+              "Error fetching portfolio components data:",
+              userInfoComponentError,
+              educationComponentError,
+              experiencesComponentError,
+              projectsComponentError,
+              skillsComponentError
+            );
+            return;
+          }
+
+          setSelectedComponents({
+            userInfo: require(`../portfolio/userInfo/${userInfoComponent?.user_info_component}`).default,
+            workExperience: require(`../portfolio/experiences/${experiencesComponent?.experiences_component}`).default,
+            education: require(`../portfolio/education/${educationComponent?.education_component}`).default,
+            projects: require(`../portfolio/projects/${projectsComponent?.projects_component}`).default,
+            userSkills: require(`../portfolio/skills/${skillsComponent?.skills_component}`).default,
+          })
+
           setPersonalInfo(userInfo);
           setEducation(educations);
           setExperiences(experiences);
           setProjects(projects);
           setUserTechnologies(userTechnologyNames);
 
+          console.log("both user and portfolio data retrieved from SUPABASE since user")
+
+
         } catch (error) {
-          console.error("Error fetching user data:", error);
+          console.error("Error fetching data:", error);
         }
       }
-    };
+    }
 
-    fetchData();
-  }, []);
+    fetchData()
+
+  }, []); 
 
   return (
     <div className="flex flex-col h-screen">

@@ -112,7 +112,7 @@ export default function OnboardingPage() {
           userTechnologies: userTechnologies.map((tech) => ({ technology_id: tech.technology_id, user_id: null }))
         };
         // Anonymous user: Save data to sessionStorage
-        sessionStorage.setItem('portfolioData', JSON.stringify(sessionPayload));
+        sessionStorage.setItem('userSessionData', JSON.stringify(sessionPayload));
         console.log('Data saved to sessionStorage for anonymous user');
         alert('Your data has been temporarily saved. Please sign up to save it permanently!');
 

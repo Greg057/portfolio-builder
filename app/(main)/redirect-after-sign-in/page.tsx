@@ -1,9 +1,9 @@
 'use client'
 
 export default function RedirectAfterSignIn() {
-    const unsavedConfig: Boolean = sessionStorage.getItem("unsavedConfig") ? true : false
+    const portfolioSessionData: Boolean = sessionStorage.getItem("portfolioSessionData") ? true : false
 
-    if (unsavedConfig) {
+    if (portfolioSessionData) {
         return window.location.href = "/editor"
     } 
 
