@@ -20,6 +20,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import AuthModal from './AuthModal'
+import { toast } from "sonner"
 
 const userInfoComponents = [UserInfo1, UserInfo2]
 const workExperienceComponents = [Experiences1]
@@ -77,8 +78,6 @@ export default function PortfolioEditor() {
         })
       );
 
-      console.log("portfolioSessionData added since not user")
-      
       return;
     }
 
@@ -115,6 +114,13 @@ export default function PortfolioEditor() {
       }
     }
 
+    toast("Changes saved", {
+      description: "Your changes have been saved. You can close this window.",
+      action: {
+        label: "Close",
+        onClick: () => console.log()
+      },
+    })
     
   }
 
@@ -137,7 +143,6 @@ export default function PortfolioEditor() {
           userSkills: require(`../portfolio/skills/${parsedConfig.skills_component}`).default,
         });
   
-        console.log("portfolioSessionData retrieved, set Selected Components and deleted");
         sessionStorage.removeItem("portfolioSessionData");
     
         await handleSave(parsedConfig); // Await the asynchronous handleSave function
@@ -188,9 +193,6 @@ export default function PortfolioEditor() {
             setUserTechnologies([]);
           }
 
-          console.log("user session data retrieved since not user")
-
-
         } catch (error) {
           console.error("Error parsing sessionStorage data:", error);
         }
@@ -229,8 +231,6 @@ export default function PortfolioEditor() {
           const { error: userTechnologiesError } = await supabase.from('user_technologies').insert(dbPayload.userTechnologies);
           if (userTechnologiesError) throw userTechnologiesError;
       
-          // Log success and clear session storage
-          console.log('Session data successfully migrated to Supabase for authenticated user.');
           sessionStorage.removeItem('userSessionData'); // Clear session data to avoid duplicate inserts
         } catch (error) {
           console.error('Error migrating session data to Supabase:', error);
@@ -397,9 +397,6 @@ export default function PortfolioEditor() {
           setExperiences(experiences);
           setProjects(projects);
           setUserTechnologies(userTechnologyNames);
-
-          console.log("both user and portfolio data retrieved from SUPABASE since user")
-
 
         } catch (error) {
           console.error("Error fetching data:", error);
