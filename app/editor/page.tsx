@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { EyeIcon, RocketIcon, SaveIcon } from 'lucide-react'
+import { EyeIcon, SaveIcon } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import UserInfo1 from '../portfolio/userInfo/UserInfo1'
 import UserInfo2 from '../portfolio/userInfo/UserInfo2'
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog"
 import AuthModal from './AuthModal'
 import { toast } from "sonner"
+import DeployButton from './DeployButton'
 
 const userInfoComponents = [UserInfo1, UserInfo2]
 const workExperienceComponents = [Experiences1]
@@ -122,10 +123,6 @@ export default function PortfolioEditor() {
       },
     })
     
-  }
-
-  const handleDeploy = () => {
-    console.log('Deploying portfolio')
   }
 
   useEffect(() => {
@@ -450,10 +447,7 @@ export default function PortfolioEditor() {
               Preview
             </Button>
           </Link>
-          <Button onClick={handleDeploy}>
-            <RocketIcon className="w-4 h-4 mr-2" />
-            Deploy
-          </Button>
+          <DeployButton />
         </div>
       </header>
 
