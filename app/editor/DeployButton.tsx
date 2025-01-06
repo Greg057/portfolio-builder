@@ -1,18 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { RocketIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input"
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
 
 export default function DeployButton() {
   const [slug, setSlug] = useState("john-doe");
   const [error, setError] = useState("");
+  const [isDeployed, setIsDeployed] = useState(false);
+  const [existingSlug, setExistingSlug] = useState("");
   const slugRegex = /^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$/;
+
+  useEffect(() => {
+    const checkDeploymentStatus = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
+        const { data, error } = await supabase
+          .from("portfolio_data")
+          .select("slug, is_deployed")
+          .eq("user_id", user.id)
+          .single();
+
+        if (!error && data?.is_deployed) {
+          setIsDeployed(true);
+          setExistingSlug(data.slug);
+        }
+      }
+    };
+
+    checkDeploymentStatus();
+  }, []);
 
   const handleSlugValidation = () => {
     if (!slug) {
@@ -63,7 +94,7 @@ export default function DeployButton() {
 
   const deployPortfolio = async (slug: string) => {
     const supabase = createClient();
-		const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
       setError("You must be logged in to deploy your portfolio.");
@@ -79,43 +110,58 @@ export default function DeployButton() {
       setError("Failed to deploy portfolio.");
     } else {
       console.log("Portfolio deployed successfully!");
-			window.open(`/portfolio/${slug}`, "_blank");
+      window.open(`/portfolio/${slug}`, "_blank");
+    }
+  };
+
+  const handleButtonClick = () => {
+    if (isDeployed) {
+      window.open(`/portfolio/${existingSlug}`, "_blank");
     }
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-				<Button>
+    <>
+      {isDeployed ? (
+        <Button onClick={handleButtonClick}>
           <RocketIcon className="w-4 h-4 mr-2" />
           Deploy
-				</Button>
-      </DialogTrigger>
-			<DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Choose your Portfolio Name</DialogTitle>
-          <DialogDescription>
-						Input your desired portfolio name. No space.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input
-              id="name"
-							value={slug}
-							onChange={(e) => setSlug(e.target.value)}
-              className="col-span-3"
-            />
-          </div>
-					{error && <p style={{ color: "red" }}>{error}</p>}
-        </div>
-        <DialogFooter>
-					<Button onClick={handleSlugSubmit}>Submit</Button>
-        </DialogFooter>
-			</DialogContent>
-    </Dialog>
+        </Button>
+      ) : (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>
+              <RocketIcon className="w-4 h-4 mr-2" />
+              Deploy
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Choose your Portfolio Name</DialogTitle>
+              <DialogDescription>
+                Input your desired portfolio name. No spaces.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Name
+                </Label>
+                <Input
+                  id="name"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                  className="col-span-3"
+                />
+              </div>
+              {error && <p style={{ color: "red" }}>{error}</p>}
+            </div>
+            <DialogFooter>
+              <Button onClick={handleSlugSubmit}>Submit</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 }
