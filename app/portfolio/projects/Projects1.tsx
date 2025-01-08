@@ -1,38 +1,18 @@
 'use client'
 
 import { Project } from '@/types/supabase-types'
-import { motion } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Github, ExternalLinkIcon } from 'lucide-react'
 
-interface ProjectsHeaderProps {
-  projects: Project[]
-  sectionRefs: any
-  sectionInView: any
-}
-
-export default function Projects1({ projects, sectionRefs, sectionInView }: ProjectsHeaderProps) {
+export default function Projects1({ projects }: { projects: Project[] }) {
     return (
-        <section id="projects" ref={sectionRefs.projects} className="mb-20">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={sectionInView.projects ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5 }}
-          >
+        <section id="projects" className="mb-20">
             <h2 className="text-3xl font-bold mb-8">Projects</h2>
             <div className="grid md:grid-cols-2 gap-8">
               {projects.map((project, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Card className="bg-card h-full flex flex-col">
+                  <Card key={project.id || index} className="bg-card h-full flex flex-col">
                     <CardHeader>
                       <CardTitle className="text-xl">{project.name}</CardTitle>
                     </CardHeader>
@@ -75,10 +55,8 @@ export default function Projects1({ projects, sectionRefs, sectionInView }: Proj
                       </div>
                     </CardContent>
                   </Card>
-                </motion.div>
               ))}
             </div>
-          </motion.div>
         </section>
     )
 }
