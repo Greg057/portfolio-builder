@@ -2,7 +2,6 @@
 
 import { useSearchParams } from 'next/navigation'
 import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Education, Project, UserInfo, Technology, WorkExperience } from '@/types/supabase-types'
 
 // Default Components as placeholders

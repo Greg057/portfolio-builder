@@ -1,8 +1,4 @@
-'use client'
-
-import { useRef, useState } from 'react'
 import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Education, Project, UserInfo, Technology, WorkExperience } from '@/types/supabase-types'
 
 interface PortfolioPageProps {

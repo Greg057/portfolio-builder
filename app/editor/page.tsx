@@ -10,6 +10,7 @@ import UserInfo1 from '../portfolio/userInfo/UserInfo1'
 import UserInfo2 from '../portfolio/userInfo/UserInfo2'
 import Experiences1 from '../portfolio/experiences/Experiences1'
 import Education1 from '../portfolio/education/Education1'
+import Education2 from '../portfolio/education/Education2'
 import Projects1 from '../portfolio/projects/Projects1'
 import Skills1 from '../portfolio/skills/Skills1'
 import Link from 'next/link'
@@ -25,7 +26,7 @@ import DeployButton from './DeployButton'
 
 const userInfoComponents = [UserInfo1, UserInfo2]
 const workExperienceComponents = [Experiences1]
-const educationComponents = [Education1]
+const educationComponents = [Education1, Education2]
 const projectsComponents = [Projects1]
 const userSkillsComponents = [Skills1]
 

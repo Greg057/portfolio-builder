@@ -1,7 +1,5 @@
-'use client'
-
 import { UserInfo } from '@/types/supabase-types'
-import { MailIcon, Github, Linkedin, ChevronDownIcon } from 'lucide-react'
+import { MailIcon, Github, Linkedin } from 'lucide-react'
 
 export default function UserInfo2({ personalInfo }: { personalInfo: UserInfo }) {
   return (

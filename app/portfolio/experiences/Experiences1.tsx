@@ -1,5 +1,3 @@
-'use client'
-
 import { WorkExperience } from '@/types/supabase-types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 

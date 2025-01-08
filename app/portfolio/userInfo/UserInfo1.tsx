@@ -1,6 +1,4 @@
-'use client'
-
-import { Mail, Github, Linkedin, ChevronDown } from 'lucide-react'
+import { Mail, Github, Linkedin } from 'lucide-react'
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { UserInfo } from '@/types/supabase-types'

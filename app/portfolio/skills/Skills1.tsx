@@ -1,5 +1,3 @@
-'use client'
-
 import { Technology } from '@/types/supabase-types'
 import { Badge } from "@/components/ui/badge"
 
