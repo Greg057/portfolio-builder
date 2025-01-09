@@ -29,7 +29,7 @@ export default function Education3({ education }: { education: Education[] }) {
             <div className="relative pl-16">
             <div className="absolute left-[26px] top-8 w-4 h-4 bg-primary rounded-full"></div>
               <Card 
-                className={`w-full max-w-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 relative ${edu.description ? 'cursor-pointer' : ''}`}
+                className={`w-full shadow-lg hover:shadow-xl transition-shadow duration-300 relative ${edu.description ? 'cursor-pointer' : ''}`}
                 onClick={() => edu.description && toggleExpand(edu.id || index.toString())}
               >
                 <CardContent className="p-6">
