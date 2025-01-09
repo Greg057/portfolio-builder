@@ -25,9 +25,10 @@ import { toast } from "sonner"
 import DeployButton from './DeployButton'
 import Education3 from '../portfolio/education/Education3'
 import Education4 from '../portfolio/education/Education4'
+import Experiences2 from '../portfolio/experiences/Experiences2'
 
 const userInfoComponents = [UserInfo1, UserInfo2]
-const workExperienceComponents = [Experiences1]
+const workExperienceComponents = [Experiences1, Experiences2]
 const educationComponents = [Education1, Education2, Education3, Education4]
 const projectsComponents = [Projects1]
 const userSkillsComponents = [Skills1]
