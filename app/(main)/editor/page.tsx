@@ -6,16 +6,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { EyeIcon, SaveIcon } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
-import UserInfo1 from '../(portfolio)/(components)/userInfo/UserInfo1'
-import UserInfo2 from '../(portfolio)/(components)/userInfo/UserInfo2'
-import Experiences1 from '../(portfolio)/(components)/experiences/Experiences1'
-import Education1 from '../(portfolio)/(components)/education/Education1'
-import Education2 from '../(portfolio)/(components)/education/Education2'
-import Projects1 from '../(portfolio)/(components)/projects/Projects1'
-import Skills1 from '../(portfolio)/(components)/skills/Skills1'
+import UserInfo1 from '../../(portfolio)/(components)/userInfo/UserInfo1'
+import UserInfo2 from '../../(portfolio)/(components)/userInfo/UserInfo2'
+import Experiences1 from '../../(portfolio)/(components)/experiences/Experiences1'
+import Education1 from '../../(portfolio)/(components)/education/Education1'
+import Education2 from '../../(portfolio)/(components)/education/Education2'
+import Projects1 from '../../(portfolio)/(components)/projects/Projects1'
+import Skills1 from '../../(portfolio)/(components)/skills/Skills1'
 import Link from 'next/link'
 import { Education, Project, UserInfo, Technology, WorkExperience, UserTechnology, Payload } from '@/types/supabase-types'
-import PortfolioPage from './PortfolioPage'
+import PortfolioPage from '../../(portfolio)/PortfolioPage'
 import {
   Dialog,
   DialogTrigger,
@@ -23,14 +23,14 @@ import {
 import AuthModal from './AuthModal'
 import { toast } from "sonner"
 import DeployButton from './DeployButton'
-import Education3 from '../(portfolio)/(components)/education/Education3'
-import Education4 from '../(portfolio)/(components)/education/Education4'
-import Experiences2 from '../(portfolio)/(components)/experiences/Experiences2'
-import UserInfo3 from '../(portfolio)/(components)/userInfo/UserInfo3'
-import Experiences3 from '../(portfolio)/(components)/experiences/Experiences3'
-import Education5 from '../(portfolio)/(components)/education/Education5'
-import Projects2 from '../(portfolio)/(components)/projects/Projects2'
-import Skills2 from '../(portfolio)/(components)/skills/Skills2'
+import Education3 from '../../(portfolio)/(components)/education/Education3'
+import Education4 from '../../(portfolio)/(components)/education/Education4'
+import Experiences2 from '../../(portfolio)/(components)/experiences/Experiences2'
+import UserInfo3 from '../../(portfolio)/(components)/userInfo/UserInfo3'
+import Experiences3 from '../../(portfolio)/(components)/experiences/Experiences3'
+import Education5 from '../../(portfolio)/(components)/education/Education5'
+import Projects2 from '../../(portfolio)/(components)/projects/Projects2'
+import Skills2 from '../../(portfolio)/(components)/skills/Skills2'
 
 const userInfoComponents = [UserInfo1, UserInfo2, UserInfo3]
 const workExperienceComponents = [Experiences1, Experiences2, Experiences3]
@@ -142,11 +142,11 @@ export default function PortfolioEditor() {
         const parsedConfig = JSON.parse(portfolioSessionData);
   
         setSelectedComponents({
-          userInfo: require(`../portfolio/userInfo/${parsedConfig.user_info_component}`).default,
-          education: require(`../portfolio/education/${parsedConfig.education_component}`).default,
-          workExperience: require(`../portfolio/experiences/${parsedConfig.experiences_component}`).default,
-          projects: require(`../portfolio/projects/${parsedConfig.projects_component}`).default,
-          userSkills: require(`../portfolio/skills/${parsedConfig.skills_component}`).default,
+          userInfo: require(`@/app/(portfolio)/(components)/userInfo/${parsedConfig.user_info_component}`).default,
+          education: require(`@/app/(portfolio)/(components)/education/${parsedConfig.education_component}`).default,
+          workExperience: require(`@/app/(portfolio)/(components)/experiences/${parsedConfig.experiences_component}`).default,
+          projects: require(`@/app/(portfolio)/(components)/projects/${parsedConfig.projects_component}`).default,
+          userSkills: require(`@/app/(portfolio)/(components)/skills/${parsedConfig.skills_component}`).default,
         });
   
         sessionStorage.removeItem("portfolioSessionData");
@@ -391,11 +391,11 @@ export default function PortfolioEditor() {
           }
 
           setSelectedComponents({
-            userInfo: require(`../portfolio/userInfo/${userInfoComponent?.user_info_component}`).default,
-            workExperience: require(`../portfolio/experiences/${experiencesComponent?.experiences_component}`).default,
-            education: require(`../portfolio/education/${educationComponent?.education_component}`).default,
-            projects: require(`../portfolio/projects/${projectsComponent?.projects_component}`).default,
-            userSkills: require(`../portfolio/skills/${skillsComponent?.skills_component}`).default,
+            userInfo: require(`@/app/(portfolio)/(components)/userInfo/${userInfoComponent?.user_info_component}`).default,
+            workExperience: require(`@/app/(portfolio)/(components)/experiences/${experiencesComponent?.experiences_component}`).default,
+            education: require(`@/app/(portfolio)/(components)/education/${educationComponent?.education_component}`).default,
+            projects: require(`@/app/(portfolio)/(components)/projects/${projectsComponent?.projects_component}`).default,
+            userSkills: require(`@/app/(portfolio)/(components)/skills/${skillsComponent?.skills_component}`).default,
           })
 
           setPersonalInfo(userInfo);

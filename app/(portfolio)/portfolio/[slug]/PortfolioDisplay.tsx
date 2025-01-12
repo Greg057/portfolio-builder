@@ -2,7 +2,7 @@
 
 import { notFound } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import PortfolioPage from "@/app/editor/PortfolioPage";
+import PortfolioPage from "@/app/(portfolio)/PortfolioPage";
 import { useEffect, useState } from "react";
 import { Education, Project, UserInfo, Technology, WorkExperience } from '@/types/supabase-types'
 import UserInfo1 from '@/app/(portfolio)/(components)/userInfo/UserInfo1'
@@ -187,11 +187,11 @@ export default function PortfolioDisplay({ slug }: { slug: string }) {
               }
         
               setSelectedComponents({
-                userInfo: require(`@/app/portfolio/userInfo/${userInfoComponent?.user_info_component}`).default,
-                workExperience: require(`@/app/portfolio/experiences/${experiencesComponent?.experiences_component}`).default,
-                education: require(`@/app/portfolio/education/${educationComponent?.education_component}`).default,
-                projects: require(`@/app/portfolio/projects/${projectsComponent?.projects_component}`).default,
-                userSkills: require(`@/app/portfolio/skills/${skillsComponent?.skills_component}`).default,
+                userInfo: require(`@/app/(portfolio)/(components)/userInfo/${userInfoComponent?.user_info_component}`).default,
+                workExperience: require(`@/app/(portfolio)/(components)/experiences/${experiencesComponent?.experiences_component}`).default,
+                education: require(`@/app/(portfolio)/(components)/education/${educationComponent?.education_component}`).default,
+                projects: require(`@/app/(portfolio)/(components)/projects/${projectsComponent?.projects_component}`).default,
+                userSkills: require(`@/app/(portfolio)/(components)/skills/${skillsComponent?.skills_component}`).default,
               })
         
               setPersonalInfo(userInfo);

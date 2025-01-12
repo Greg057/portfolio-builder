@@ -11,11 +11,11 @@ export default function PortfolioPage() {
   const ProjectsComponentName = searchParams.get('ProjectsComponent')
   const UserSkillsComponentName = searchParams.get('UserSkillsComponent')
 
-  const UserInfoComponent = require(`./userInfo/${UserInfoComponentName}`).default
-  const WorkExperienceComponent = require(`./experiences/${WorkExperienceComponentName}`).default
-  const EducationComponent = require(`./education/${EducationComponentName}`).default
-  const ProjectsComponent = require(`./projects/${ProjectsComponentName}`).default
-  const UserSkillsComponent = require(`./skills/${UserSkillsComponentName}`).default
+  const UserInfoComponent = require(`../(components)/userInfo/${UserInfoComponentName}`).default
+  const WorkExperienceComponent = require(`../(components)/experiences/${WorkExperienceComponentName}`).default
+  const EducationComponent = require(`../(components)/education/${EducationComponentName}`).default
+  const ProjectsComponent = require(`../(components)/projects/${ProjectsComponentName}`).default
+  const UserSkillsComponent = require(`../(components)/skills/${UserSkillsComponentName}`).default
 
   const personalInfo = JSON.parse(searchParams.get('personalInfo') || '{}')
   const education = JSON.parse(searchParams.get('education') || '[]')
