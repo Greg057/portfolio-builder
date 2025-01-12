@@ -5,11 +5,11 @@ import { createClient } from "@/utils/supabase/client";
 import PortfolioPage from "@/app/editor/PortfolioPage";
 import { useEffect, useState } from "react";
 import { Education, Project, UserInfo, Technology, WorkExperience } from '@/types/supabase-types'
-import UserInfo1 from '@/app/portfolio/userInfo/UserInfo1'
-import Experiences1 from '@/app/portfolio/experiences/Experiences1'
-import Education1 from '@/app/portfolio/education/Education1'
-import Projects1 from '@/app/portfolio/projects/Projects1'
-import Skills1 from '@/app/portfolio/skills/Skills1'
+import UserInfo1 from '@/app/(portfolio)/(components)/userInfo/UserInfo1'
+import Experiences1 from '@/app/(portfolio)/(components)/experiences/Experiences1'
+import Education1 from '@/app/(portfolio)/(components)/education/Education1'
+import Projects1 from '@/app/(portfolio)/(components)/projects/Projects1'
+import Skills1 from '@/app/(portfolio)/(components)/skills/Skills1'
 
 export default function PortfolioDisplay({ slug }: { slug: string }) {
     const [personalInfo, setPersonalInfo] = useState<UserInfo>();
