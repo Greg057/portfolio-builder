@@ -2,6 +2,7 @@ import { Mail, Github, Linkedin } from 'lucide-react'
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { UserInfo } from '@/types/supabase-types'
+import { Card, CardContent } from '@/components/ui/card'
 
 export default function UserInfo1({ personalInfo }: { personalInfo: UserInfo }) {
   return (
@@ -36,6 +37,12 @@ export default function UserInfo1({ personalInfo }: { personalInfo: UserInfo }) 
             </Button>
           )}
         </div>
+        <h2 className="text-3xl font-bold mb-8">About Me</h2>
+        <Card className="bg-card">
+          <CardContent className="prose prose-lg dark:prose-invert">
+            <p>{personalInfo?.about_me}</p>
+          </CardContent>
+        </Card>
     </header>
   )
 }

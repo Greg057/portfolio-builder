@@ -26,12 +26,17 @@ import DeployButton from './DeployButton'
 import Education3 from '../portfolio/education/Education3'
 import Education4 from '../portfolio/education/Education4'
 import Experiences2 from '../portfolio/experiences/Experiences2'
+import UserInfo3 from '../portfolio/userInfo/UserInfo3'
+import Experiences3 from '../portfolio/experiences/Experiences3'
+import Education5 from '../portfolio/education/Education5'
+import Projects2 from '../portfolio/projects/Projects2'
+import Skills2 from '../portfolio/skills/Skills2'
 
-const userInfoComponents = [UserInfo1, UserInfo2]
-const workExperienceComponents = [Experiences1, Experiences2]
-const educationComponents = [Education1, Education2, Education3, Education4]
-const projectsComponents = [Projects1]
-const userSkillsComponents = [Skills1]
+const userInfoComponents = [UserInfo1, UserInfo2, UserInfo3]
+const workExperienceComponents = [Experiences1, Experiences2, Experiences3]
+const educationComponents = [Education1, Education2, Education3, Education4, Education5]
+const projectsComponents = [Projects1, Projects2]
+const userSkillsComponents = [Skills1, Skills2]
 
 const sections = [
   { name: 'User Info', key: 'userInfo', components: userInfoComponents },
