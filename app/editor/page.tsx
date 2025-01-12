@@ -6,16 +6,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { EyeIcon, SaveIcon } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
-import UserInfo1 from '../../(portfolio)/(components)/userInfo/UserInfo1'
-import UserInfo2 from '../../(portfolio)/(components)/userInfo/UserInfo2'
-import Experiences1 from '../../(portfolio)/(components)/experiences/Experiences1'
-import Education1 from '../../(portfolio)/(components)/education/Education1'
-import Education2 from '../../(portfolio)/(components)/education/Education2'
-import Projects1 from '../../(portfolio)/(components)/projects/Projects1'
-import Skills1 from '../../(portfolio)/(components)/skills/Skills1'
+import UserInfo1 from '../(portfolio)/(components)/userInfo/UserInfo1'
+import UserInfo2 from '../(portfolio)/(components)/userInfo/UserInfo2'
+import Experiences1 from '../(portfolio)/(components)/experiences/Experiences1'
+import Education1 from '../(portfolio)/(components)/education/Education1'
+import Education2 from '../(portfolio)/(components)/education/Education2'
+import Projects1 from '../(portfolio)/(components)/projects/Projects1'
+import Skills1 from '../(portfolio)/(components)/skills/Skills1'
 import Link from 'next/link'
 import { Education, Project, UserInfo, Technology, WorkExperience, UserTechnology, Payload } from '@/types/supabase-types'
-import PortfolioPage from '../../(portfolio)/PortfolioPage'
+import PortfolioPage from '../(portfolio)/PortfolioPage'
 import {
   Dialog,
   DialogTrigger,
@@ -23,14 +23,14 @@ import {
 import AuthModal from './AuthModal'
 import { toast } from "sonner"
 import DeployButton from './DeployButton'
-import Education3 from '../../(portfolio)/(components)/education/Education3'
-import Education4 from '../../(portfolio)/(components)/education/Education4'
-import Experiences2 from '../../(portfolio)/(components)/experiences/Experiences2'
-import UserInfo3 from '../../(portfolio)/(components)/userInfo/UserInfo3'
-import Experiences3 from '../../(portfolio)/(components)/experiences/Experiences3'
-import Education5 from '../../(portfolio)/(components)/education/Education5'
-import Projects2 from '../../(portfolio)/(components)/projects/Projects2'
-import Skills2 from '../../(portfolio)/(components)/skills/Skills2'
+import Education3 from '../(portfolio)/(components)/education/Education3'
+import Education4 from '../(portfolio)/(components)/education/Education4'
+import Experiences2 from '../(portfolio)/(components)/experiences/Experiences2'
+import UserInfo3 from '../(portfolio)/(components)/userInfo/UserInfo3'
+import Experiences3 from '../(portfolio)/(components)/experiences/Experiences3'
+import Education5 from '../(portfolio)/(components)/education/Education5'
+import Projects2 from '../(portfolio)/(components)/projects/Projects2'
+import Skills2 from '../(portfolio)/(components)/skills/Skills2'
 
 const userInfoComponents = [UserInfo1, UserInfo2, UserInfo3]
 const workExperienceComponents = [Experiences1, Experiences2, Experiences3]
