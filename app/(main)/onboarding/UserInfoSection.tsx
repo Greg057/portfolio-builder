@@ -121,9 +121,9 @@ export default function UserInfoSection({
             accept="image/*"
             onChange={(e) => handleFileChange(e, 'avatar')}
           />
-          {userInfo.avatar && (
+          {userInfo.avatarFile && (
             <p className="text-sm text-muted-foreground">
-              Selected file: {userInfo.avatar instanceof File ? userInfo.avatar.name : userInfo.avatar}
+              Selected file: {userInfo.avatarFile instanceof File ? userInfo.avatarFile.name : userInfo.avatarUrl}
             </p>
           )}
         </div>
@@ -139,9 +139,9 @@ export default function UserInfoSection({
               onChange={(e) => handleFileChange(e, 'cv')}
             />
           </div>
-          {userInfo.cv && (
+          {userInfo.cvFile && (
             <p className="text-sm text-muted-foreground">
-              Selected file: {userInfo.cv instanceof File ? userInfo.cv.name : userInfo.cv}
+              Selected file: {userInfo.cvFile instanceof File ? userInfo.cvFile.name : userInfo.cvUrl}
             </p>
           )}
         </div>

@@ -29,8 +29,10 @@ export default function OnboardingPage() {
     linkedin: null,
     about_me: null,
     location: null,
-    avatar: null,
-    cv: null,
+    avatarUrl: null,
+    avatarFile: null,
+    cvUrl: null,
+    cvFile: null,
     x: null
   })
   const [educations, setEducations] = useState<Education[]>([{ degree: '', university: '', start_year: '', end_year: '', description: null }])
@@ -105,8 +107,8 @@ export default function OnboardingPage() {
         linkedin: userInfo.linkedin?.trim() || null,
         about_me: userInfo.about_me?.trim() || null,
         location: userInfo.location?.trim() || null,
-        avatar: userInfo.avatar?.name || null,
-        cv: userInfo.cv?.name || null,
+        avatarUrl: userInfo.avatarUrl?.trim() || null,
+        cvUrl: userInfo.cvUrl?.trim() || null,
         x: userInfo.x?.trim() || null,
       },
       educations: educations
@@ -175,30 +177,30 @@ export default function OnboardingPage() {
       } else {
         const userId = user.id;
 
-        if (userInfo.avatar) {
+        if (userInfo.avatarFile) {
           try {
-            const { publicUrl: avatarPath, error } = await uploadAvatar(userInfo.avatar, userId);
+            const { publicUrl: avatarPath, error } = await uploadAvatar(userInfo.avatarFile, userId);
             if (error) {
               console.error('Error uploading avatar:', error.message);
               // Handle the error as needed (e.g., show a message to the user)
             } else {
               console.log('Avatar successfully uploaded:', avatarPath);
-              payload.userInfo.avatar = avatarPath;
+              payload.userInfo.avatarUrl = avatarPath;
             }
           } catch (error) {
             console.error('Error during avatar upload:', (error as Error).message);
           }
         }
         
-        if (userInfo.cv) {
+        if (userInfo.cvFile) {
           try {
-            const { publicUrl: cvPath, error } = await uploadCv(userInfo.cv, userId);
+            const { publicUrl: cvPath, error } = await uploadCv(userInfo.cvFile, userId);
             if (error) {
               console.error('Error uploading CV:', error.message);
               // Handle the error as needed (e.g., show a message to the user)
             } else {
               console.log('CV successfully uploaded:', cvPath);
-              payload.userInfo.cv = cvPath;
+              payload.userInfo.cvUrl = cvPath;
             }
           } catch (error) {
             console.error('Error during CV upload:', (error as Error).message);

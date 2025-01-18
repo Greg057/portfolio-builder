@@ -7,8 +7,10 @@ export type UserInfo = {
     linkedin: string | null;
     about_me: string | null;
     location: string | null;
-    avatar: File | null;
-    cv: File | null;
+    avatarUrl: string | null;
+    avatarFile: File | null;
+    cvUrl: string | null;
+    cvFile: File | null;
     x: string | null;
 };
 
@@ -92,8 +94,8 @@ export type Payload = {
         linkedin: string | null;
         about_me: string | null;
         location: string | null;
-        avatar: string | null;
-        cv: string | null;
+        avatarUrl: string | null;
+        cvUrl: string | null;
         x: string | null;
     };
     educations: Education[];

@@ -28,7 +28,7 @@ export default function PortfolioPage({
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted text-foreground">
       {personalInfo && (
-        <UserInfoComponent personalInfo={personalInfo} />
+        <UserInfoComponent personalInfo={personalInfo}/>
       )} 
 
       {experiences && (
