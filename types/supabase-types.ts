@@ -1,11 +1,15 @@
 export type UserInfo = {
     user_id?: string; // References `auth.users.id`
     full_name: string;
-    title: string | null;
     email: string;
+    title: string | null;
     github: string | null;
     linkedin: string | null;
     about_me: string | null;
+    location: string | null;
+    avatar: File | null;
+    cv: File | null;
+    x: string | null;
 };
 
 export type WorkExperience = {
@@ -79,7 +83,19 @@ export type PortfolioData = {
 };
 
 export type Payload = {
-    userInfo: UserInfo;
+    userInfo: {
+        user_id?: string; // References `auth.users.id`
+        full_name: string;
+        email: string;
+        title: string | null;
+        github: string | null;
+        linkedin: string | null;
+        about_me: string | null;
+        location: string | null;
+        avatar: string | null;
+        cv: string | null;
+        x: string | null;
+    };
     educations: Education[];
     experiences: WorkExperience[];
     projects: {
@@ -94,4 +110,8 @@ export type Payload = {
     userTechnologies: UserTechnology[];
 }
 
+export type UploadResult = {
+    publicUrl: string | null;
+    error: Error | null;
+};
   

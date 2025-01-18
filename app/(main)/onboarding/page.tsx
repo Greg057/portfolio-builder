@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
-import { UserInfo, WorkExperience, Education, Project, UserTechnology, Payload } from '@/types/supabase-types'
+import { UserInfo, WorkExperience, Education, Project, UserTechnology, Payload, UploadResult } from '@/types/supabase-types'
 import EducationSection from './EducationSection'
 import UserInfoSection from './UserInfoSection'
 import ExperienceSection from './ExperienceSection'
@@ -28,6 +28,10 @@ export default function OnboardingPage() {
     github: null,
     linkedin: null,
     about_me: null,
+    location: null,
+    avatar: null,
+    cv: null,
+    x: null
   })
   const [educations, setEducations] = useState<Education[]>([{ degree: '', university: '', start_year: '', end_year: '', description: null }])
   const [experiences, setExperiences] = useState<WorkExperience[]>([{ company: '', position: '', start_date: '', end_date: '', description: null }])
@@ -35,6 +39,50 @@ export default function OnboardingPage() {
   const [userTechnologies, setUserTechnologies] = useState<UserTechnology[]>([{ technology_id: null }])
 
   const router = useRouter()
+
+  const uploadPublicFile = async (file: File, path: string): Promise<UploadResult> => {
+    const supabase = createClient();
+    const { data, error } = await supabase.storage
+      .from('user-files')
+      .upload(path, file, {
+        upsert: true,         // Overwrite if file exists
+      });
+  
+    if (error) {
+      console.error('Error uploading file:', error);
+      return { publicUrl: null, error };
+    }
+  
+    return { publicUrl: path, error: null };
+  };
+
+  const uploadAvatar = async (file: File, userId: string): Promise<UploadResult> => {
+    // Extract file extension from the file name
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    const validExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+
+    if (!fileExtension || !validExtensions.includes(fileExtension)) {
+      throw new Error('Invalid avatar file type. Supported types: jpg, jpeg, png, webp.');
+    }
+
+    // Upload the avatar with the correct extension
+    const path = `avatars/${userId}.${fileExtension}`;
+    return await uploadPublicFile(file, path);
+  };
+
+  const uploadCv = async (file: File, userId: string): Promise<UploadResult> => {
+    // Extract file extension from the file name
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    const validExtensions = ['pdf', 'doc', 'docx'];
+
+    if (!fileExtension || !validExtensions.includes(fileExtension)) {
+      throw new Error('Invalid CV file type. Supported types: pdf, doc, docx.');
+    }
+
+    // Upload the CV with the correct extension
+    const path = `cvs/${userId}.${fileExtension}`;
+    return await uploadPublicFile(file, path);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,6 +103,10 @@ export default function OnboardingPage() {
         github: userInfo.github?.trim() || null,
         linkedin: userInfo.linkedin?.trim() || null,
         about_me: userInfo.about_me?.trim() || null,
+        location: userInfo.location?.trim() || null,
+        avatar: userInfo.avatar?.name || null,
+        cv: userInfo.cv?.name || null,
+        x: userInfo.x?.trim() || null,
       },
       educations: educations
         .filter(
@@ -122,6 +174,39 @@ export default function OnboardingPage() {
       } else {
         const userId = user.id;
 
+        if (userInfo.avatar) {
+          try {
+            const { publicUrl: avatarPath, error } = await uploadAvatar(userInfo.avatar, userId);
+            if (error) {
+              console.error('Error uploading avatar:', error.message);
+              // Handle the error as needed (e.g., show a message to the user)
+            } else {
+              console.log('Avatar successfully uploaded:', avatarPath);
+              payload.userInfo.avatar = avatarPath;
+            }
+          } catch (error) {
+            console.error('Error during avatar upload:', (error as Error).message);
+          }
+        }
+        
+        if (userInfo.cv) {
+          try {
+            const { publicUrl: cvPath, error } = await uploadCv(userInfo.cv, userId);
+            if (error) {
+              console.error('Error uploading CV:', error.message);
+              // Handle the error as needed (e.g., show a message to the user)
+            } else {
+              console.log('CV successfully uploaded:', cvPath);
+              payload.userInfo.cv = cvPath;
+            }
+          } catch (error) {
+            console.error('Error during CV upload:', (error as Error).message);
+          }
+        }
+        
+        console.log('Files successfully uploaded to Supabase for authenticated user');
+        
+
         const dbPayload: Payload = {
           userInfo: { ...payload.userInfo, user_id: userId },
           educations: payload.educations.map((edu) => ({ ...edu, user_id: userId })),
@@ -131,22 +216,22 @@ export default function OnboardingPage() {
           userTechnologies: userTechnologies.map((tech) => ({ technology_id: tech.technology_id, user_id: userId }))
         };
   
-        const { error: userInfoError } = await supabase.from('personal_info').insert(dbPayload.userInfo);
+        const { error: userInfoError } = await supabase.from('personal_info').upsert(dbPayload.userInfo);
         if (userInfoError) throw userInfoError;
   
-        const { error: educationsError } = await supabase.from('education').insert(dbPayload.educations);
+        const { error: educationsError } = await supabase.from('education').upsert(dbPayload.educations);
         if (educationsError) throw educationsError;
   
-        const { error: experiencesError } = await supabase.from('work_experience').insert(dbPayload.experiences);
+        const { error: experiencesError } = await supabase.from('work_experience').upsert(dbPayload.experiences);
         if (experiencesError) throw experiencesError;
   
-        const { error: projectsError } = await supabase.from('projects').insert(dbPayload.projects);
+        const { error: projectsError } = await supabase.from('projects').upsert(dbPayload.projects);
         if (projectsError) throw projectsError;
         
-        const { error: projectsTechnologiesError } = await supabase.from('project_technologies').insert(dbPayload.projectTechnologies);
+        const { error: projectsTechnologiesError } = await supabase.from('project_technologies').upsert(dbPayload.projectTechnologies);
         if (projectsTechnologiesError) throw projectsTechnologiesError;
         
-        const { error: userTechnologiesError } = await supabase.from('user_technologies').insert(dbPayload.userTechnologies);
+        const { error: userTechnologiesError } = await supabase.from('user_technologies').upsert(dbPayload.userTechnologies);
         if (userTechnologiesError) throw userTechnologiesError;
 
         console.log('Data successfully saved to Supabase for authenticated user');
