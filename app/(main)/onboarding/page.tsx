@@ -235,6 +235,26 @@ export default function OnboardingPage() {
         const { error: userTechnologiesError } = await supabase.from('user_technologies').upsert(dbPayload.userTechnologies);
         if (userTechnologiesError) throw userTechnologiesError;
 
+        const defaultValues = {
+          user_id: userId,
+          user_info_component: "UserInfo1",
+          education_component: "Education1",
+          experiences_component: "Experiences1",
+          projects_component: "Projects1",
+          skills_component: "Skills1",
+        };
+
+        const { data, error } = await supabase
+          .from("portfolio_data")
+          .upsert(defaultValues, { onConflict: "user_id" }) // Ensure upsert by user_id
+
+        if (error) {
+          console.error("Error upserting portfolio data:", error.message);
+          throw error
+        }
+        console.log("Portfolio data upserted successfully:", data);
+
+
         console.log('Data successfully saved to Supabase for authenticated user');
 
         router.push('/editor')

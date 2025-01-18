@@ -69,28 +69,33 @@ export default function DeployButton() {
 
   const handleSlugSubmit = async () => {
     if (!handleSlugValidation()) return;
-
+  
     const supabase = createClient();
-
-    // Check slug availability
-    const { data, error } = await supabase
-      .from("portfolio_data")
-      .select("slug")
-      .eq("slug", slug)
-      .single();
-
-    if (error && error.code !== "PGRST116") {
-      setError("An error occurred while checking slug availability.");
-      return;
+  
+    try {
+      // Check slug availability
+      const { data, error } = await supabase
+        .from("portfolio_data")
+        .select("slug")
+        .eq("slug", slug);
+  
+      if (error) {
+        console.error("Error while checking slug availability:", error.message);
+        setError("An error occurred while checking slug availability.");
+        return;
+      }
+  
+      if (data && data.length > 0) {
+        setError("Slug is already in use. Please choose another one.");
+        return;
+      }
+  
+      await deployPortfolio(slug); // Proceed with deployment
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      setError("An unexpected error occurred. Please try again.");
     }
-
-    if (data) {
-      setError("Slug is already in use. Please choose another one.");
-      return;
-    }
-
-    await deployPortfolio(slug); // Proceed with deployment
-  };
+  };  
 
   const deployPortfolio = async (slug: string) => {
     const supabase = createClient();
