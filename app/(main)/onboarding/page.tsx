@@ -40,8 +40,9 @@ export default function OnboardingPage() {
 
   const router = useRouter()
 
-  const uploadPublicFile = async (file: File, path: string): Promise<UploadResult> => {
+  const uploadPublicFile = async (file: File, path: string, userId: string): Promise<UploadResult> => {
     const supabase = createClient();
+
     const { data, error } = await supabase.storage
       .from('user-files')
       .upload(path, file, {
@@ -66,8 +67,8 @@ export default function OnboardingPage() {
     }
 
     // Upload the avatar with the correct extension
-    const path = `avatars/${userId}.${fileExtension}`;
-    return await uploadPublicFile(file, path);
+    const path = `${userId}/avatar.${fileExtension}`;
+    return await uploadPublicFile(file, path, userId);
   };
 
   const uploadCv = async (file: File, userId: string): Promise<UploadResult> => {
@@ -80,8 +81,8 @@ export default function OnboardingPage() {
     }
 
     // Upload the CV with the correct extension
-    const path = `cvs/${userId}.${fileExtension}`;
-    return await uploadPublicFile(file, path);
+    const path = `${userId}/cv.${fileExtension}`;
+    return await uploadPublicFile(file, path, userId);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
