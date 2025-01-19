@@ -36,7 +36,7 @@ export default function OnboardingPage() {
     x: null
   })
   const [educations, setEducations] = useState<Education[]>([{ degree: '', university: '', start_year: '', end_year: '', description: null, logoUrl: null, logoFile: null }])
-  const [experiences, setExperiences] = useState<WorkExperience[]>([{ company: '', position: '', start_date: '', end_date: '', description: null }])
+  const [experiences, setExperiences] = useState<WorkExperience[]>([{ company: '', position: '', start_date: '', end_date: '', description: null, logoUrl: null, logoFile: null }])
   const [projects, setProjects] = useState<Project[]>([{ id: uuidv4(), name: '', description: '', github_link: '', live_link: '', technologies: [], availableTechnologies: initialAvailableTechnologies }])
   const [userTechnologies, setUserTechnologies] = useState<UserTechnology[]>([{ technology_id: null }])
 
@@ -108,6 +108,27 @@ export default function OnboardingPage() {
     return await uploadPublicFile(file, path);
   };
 
+  const uploadCompanyLogo = async (
+    file: File,
+    userId: string,
+    company: string
+  ): Promise<UploadResult> => {
+    // Extract file extension from the file name
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    const validExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+  
+    if (!fileExtension || !validExtensions.includes(fileExtension)) {
+      throw new Error('Invalid logo file type. Supported types: jpg, jpeg, png, webp, gif.');
+    }
+  
+    // Create a sanitized path for the education logo upload
+    const sanitizedCompany = company.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const path = `${userId}/experience/${sanitizedCompany}.${fileExtension}`;
+  
+    // Use the generic file upload function
+    return await uploadPublicFile(file, path);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('handle submit called')
@@ -150,12 +171,12 @@ export default function OnboardingPage() {
             exp.company.trim() && exp.position.trim() && exp.start_date.trim() && exp.end_date.trim()
         )
         .map((exp) => ({
-          ...exp,
           company: exp.company.trim(),
           position: exp.position.trim(),
           start_date: exp.start_date.trim(),
           end_date: exp.end_date.trim(),
           description: exp.description?.trim() || null,
+          logoUrl: exp.logoUrl?.trim() || null,
         })),
       projects: projects
         .filter((proj) => proj.name.trim())
@@ -258,6 +279,36 @@ export default function OnboardingPage() {
         );
         
         payload.educations = updatedEducations;
+
+        const updatedExperiences = await Promise.all(
+          experiences.map(async (exp) => {
+            // Extract logoFile and the rest of the properties
+            const { logoFile, ...expData } = exp;
+        
+            if (logoFile) {
+              try {
+                const { publicUrl: logoPath, error } = await uploadCompanyLogo(logoFile, userId, exp.company);
+        
+                if (error) {
+                  console.error(`Error uploading logo for company "${exp.company}":`, error.message);
+                  return { ...expData }; // Exclude logoFile
+                }
+        
+                console.log(`Education logo successfully uploaded for company "${exp.company}":`, logoPath);
+        
+                // Add the logo URL to the education object
+                return { ...expData, logoUrl: logoPath }; // Include logoUrl, exclude logoFile
+              } catch (error) {
+                console.error(`Unexpected error during education logo upload for university "${exp.company}":`, (error as Error).message);
+                return { ...expData }; // Exclude logoFile
+              }
+            }
+        
+            return { ...expData }; // Exclude logoFile if no upload is needed
+          })
+        );
+        
+        payload.experiences = updatedExperiences;
         
 
         

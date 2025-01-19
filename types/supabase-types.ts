@@ -22,6 +22,8 @@ export type WorkExperience = {
     start_date: string;
     end_date: string;
     description: string | null;
+    logoUrl: string | null;
+    logoFile: File | null
 };
 
 export type Project = {
@@ -110,7 +112,16 @@ export type Payload = {
         description: string | null;
         logoUrl: string | null;
     }[];
-    experiences: WorkExperience[];
+    experiences: {
+        id?: string; // Primary key
+        user_id?: string; // References `auth.users.id`
+        company: string;
+        position: string;
+        start_date: string;
+        end_date: string;
+        description: string | null;
+        logoUrl: string | null;
+    }[];
     projects: {
         id: string; // Primary key
         user_id?: string; // References `auth.users.id`

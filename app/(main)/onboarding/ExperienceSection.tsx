@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { PlusIcon, TrashIcon } from '@radix-ui/react-icons'
 import { WorkExperience } from '@/types/supabase-types'
+import { createClient } from "@/utils/supabase/client"
 
 export default function ExperienceSection({
     experiences,
@@ -18,12 +19,31 @@ export default function ExperienceSection({
     const addExperience = () => {
       setExperiences([
         ...experiences,
-        { company: '', position: '', start_date: '', end_date: '', description: null },
+        { company: '', position: '', start_date: '', end_date: '', description: null, logoUrl: null, logoFile: null },
       ])
     }
   
     const removeExperience = (index: number) => {
       setExperiences(experiences.filter((_, i) => i !== index))
+    }
+
+    const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        alert("You need to sign in to upload files")
+        return;
+      }
+            
+      const file = e.target.files?.[0];
+      if (file) {
+        setExperiences(experiences.map((item, i) => 
+          i === index ? { ...item, logoFile: file } : item
+        ))
+      }
     }
   
     return (
@@ -64,6 +84,20 @@ export default function ExperienceSection({
                     )
                   }
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor={`logo-upload-${index}`}>Company Logo</Label>
+                <Input
+                  id={`logo-upload-${index}`}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleLogoUpload(e, index)}
+                />
+                {exp.logoFile && (
+                  <p className="text-sm text-muted-foreground">
+                    Selected file: {exp.logoFile.name}
+                  </p>
+                )}
               </div>
               <div className="flex space-x-4">
                 <div className="flex-1 space-y-2">
