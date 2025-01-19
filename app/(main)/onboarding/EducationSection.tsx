@@ -3,8 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { PlusIcon, TrashIcon } from '@radix-ui/react-icons'
+import { PlusIcon, TrashIcon, UploadIcon } from 'lucide-react'
 import { Education } from '@/types/supabase-types'
+import { createClient } from "@/utils/supabase/client"
 
 export default function EducationSection({
     educations,
@@ -14,11 +15,30 @@ export default function EducationSection({
     setEducations: React.Dispatch<React.SetStateAction<Education[]>>
 }) {
     const addEducation = () => {
-      setEducations([...educations, { degree: '', university: '', start_year: '', end_year: '', description: null }])
+      setEducations([...educations, { degree: '', university: '', start_year: '', end_year: '', description: null, logoUrl: null, logoFile: null }])
     }
   
     const removeEducation = (index: number) => {
       setEducations(educations.filter((_, i) => i !== index))
+    }
+
+    const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        alert("You need to sign in to upload files")
+        return;
+      }
+            
+      const file = e.target.files?.[0];
+      if (file) {
+        setEducations(educations.map((item, i) => 
+          i === index ? { ...item, logoFile: file } : item
+        ))
+      }
     }
   
     return (
@@ -59,6 +79,20 @@ export default function EducationSection({
                     )
                   }
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor={`logo-upload-${index}`}>University Logo</Label>
+                <Input
+                  id={`logo-upload-${index}`}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleLogoUpload(e, index)}
+                />
+                {edu.logoFile && (
+                  <p className="text-sm text-muted-foreground">
+                    Selected file: {edu.logoFile.name}
+                  </p>
+                )}
               </div>
               <div className="flex space-x-4">
                 <div className="flex-1 space-y-2">
@@ -124,3 +158,4 @@ export default function EducationSection({
       </Card>
     )
 }
+

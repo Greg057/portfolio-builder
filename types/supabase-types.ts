@@ -44,6 +44,8 @@ export type Education = {
     start_year: string;
     end_year: string;
     description: string | null;
+    logoUrl: string | null;
+    logoFile: File | null
 };
 
 export type Technology = {
@@ -98,7 +100,16 @@ export type Payload = {
         cvUrl: string | null;
         x: string | null;
     };
-    educations: Education[];
+    educations: {
+        id?: string; // Primary key
+        user_id?: string; // References `auth.users.id`
+        degree: string;
+        university: string;
+        start_year: string;
+        end_year: string;
+        description: string | null;
+        logoUrl: string | null;
+    }[];
     experiences: WorkExperience[];
     projects: {
         id: string; // Primary key

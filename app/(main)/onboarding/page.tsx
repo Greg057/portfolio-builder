@@ -35,14 +35,14 @@ export default function OnboardingPage() {
     cvFile: null,
     x: null
   })
-  const [educations, setEducations] = useState<Education[]>([{ degree: '', university: '', start_year: '', end_year: '', description: null }])
+  const [educations, setEducations] = useState<Education[]>([{ degree: '', university: '', start_year: '', end_year: '', description: null, logoUrl: null, logoFile: null }])
   const [experiences, setExperiences] = useState<WorkExperience[]>([{ company: '', position: '', start_date: '', end_date: '', description: null }])
   const [projects, setProjects] = useState<Project[]>([{ id: uuidv4(), name: '', description: '', github_link: '', live_link: '', technologies: [], availableTechnologies: initialAvailableTechnologies }])
   const [userTechnologies, setUserTechnologies] = useState<UserTechnology[]>([{ technology_id: null }])
 
   const router = useRouter()
 
-  const uploadPublicFile = async (file: File, path: string, userId: string): Promise<UploadResult> => {
+  const uploadPublicFile = async (file: File, path: string): Promise<UploadResult> => {
     const supabase = createClient();
 
     const { data, error } = await supabase.storage
@@ -70,7 +70,7 @@ export default function OnboardingPage() {
 
     // Upload the avatar with the correct extension
     const path = `${userId}/avatar.${fileExtension}`;
-    return await uploadPublicFile(file, path, userId);
+    return await uploadPublicFile(file, path);
   };
 
   const uploadCv = async (file: File, userId: string): Promise<UploadResult> => {
@@ -84,7 +84,28 @@ export default function OnboardingPage() {
 
     // Upload the CV with the correct extension
     const path = `${userId}/cv.${fileExtension}`;
-    return await uploadPublicFile(file, path, userId);
+    return await uploadPublicFile(file, path);
+  };
+
+  const uploadEducationLogo = async (
+    file: File,
+    userId: string,
+    university: string
+  ): Promise<UploadResult> => {
+    // Extract file extension from the file name
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    const validExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+  
+    if (!fileExtension || !validExtensions.includes(fileExtension)) {
+      throw new Error('Invalid logo file type. Supported types: jpg, jpeg, png, webp, gif.');
+    }
+  
+    // Create a sanitized path for the education logo upload
+    const sanitizedUniversity = university.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const path = `${userId}/education/${sanitizedUniversity}.${fileExtension}`;
+  
+    // Use the generic file upload function
+    return await uploadPublicFile(file, path);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -116,12 +137,12 @@ export default function OnboardingPage() {
           (edu) => edu.degree.trim() && edu.university.trim() && edu.start_year.trim() && edu.end_year.trim()
         )
         .map((edu) => ({
-          ...edu,
           degree: edu.degree.trim(),
           university: edu.university.trim(),
           start_year: edu.start_year.trim(),
           end_year: edu.end_year.trim(),
           description: edu.description?.trim() || null,
+          logoUrl: edu.logoUrl?.trim() || null,
         })),
       experiences: experiences
         .filter(
@@ -206,6 +227,39 @@ export default function OnboardingPage() {
             console.error('Error during CV upload:', (error as Error).message);
           }
         }
+
+
+        const updatedEducations = await Promise.all(
+          educations.map(async (edu) => {
+            // Extract logoFile and the rest of the properties
+            const { logoFile, ...eduData } = edu;
+        
+            if (logoFile) {
+              try {
+                const { publicUrl: logoPath, error } = await uploadEducationLogo(logoFile, userId, edu.university);
+        
+                if (error) {
+                  console.error(`Error uploading logo for university "${edu.university}":`, error.message);
+                  return { ...eduData }; // Exclude logoFile
+                }
+        
+                console.log(`Education logo successfully uploaded for university "${edu.university}":`, logoPath);
+        
+                // Add the logo URL to the education object
+                return { ...eduData, logoUrl: logoPath }; // Include logoUrl, exclude logoFile
+              } catch (error) {
+                console.error(`Unexpected error during education logo upload for university "${edu.university}":`, (error as Error).message);
+                return { ...eduData }; // Exclude logoFile
+              }
+            }
+        
+            return { ...eduData }; // Exclude logoFile if no upload is needed
+          })
+        );
+        
+        payload.educations = updatedEducations;
+        
+
         
         console.log('Files successfully uploaded to Supabase for authenticated user');
         

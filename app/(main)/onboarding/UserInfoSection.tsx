@@ -24,6 +24,7 @@ export default function UserInfoSection({
 
     if (!user) {
       alert("You need to sign in to upload files")
+      return;
     }
           
     const file = e.target.files?.[0];
