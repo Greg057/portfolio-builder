@@ -52,8 +52,6 @@ export default function PortfolioEditor() {
   const [experiences, setExperiences] = useState<WorkExperience[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [userTechnologies, setUserTechnologies] = useState<Technology[]>([]);
-
-
   const [selectedComponents, setSelectedComponents] = useState({
     userInfo: UserInfo1,
     workExperience: Experiences1,
@@ -206,16 +204,7 @@ export default function PortfolioEditor() {
 
       if (userSessionData && userId) {
         // Parse session data from sessionStorage
-        const sessionData: Payload = JSON.parse(userSessionData);
-
-        const dbPayload: Payload = {
-          userInfo: { ...sessionData.userInfo, user_id: userId },
-          educations: sessionData.educations.map((edu) => ({ ...edu, user_id: userId })),
-          experiences: sessionData.experiences.map((exp) => ({ ...exp, user_id: userId })),
-          projects: sessionData.projects.map((proj) => ({ ...proj, user_id: userId })),
-          projectTechnologies: sessionData.projectTechnologies,
-          userTechnologies: sessionData.userTechnologies.map((tech) => ({ ...tech, user_id: userId }))
-        };
+        const dbPayload: Payload = JSON.parse(userSessionData);
       
         try {
           // Insert data into Supabase tables sequentially

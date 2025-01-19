@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { PlusIcon, TrashIcon, UploadIcon } from 'lucide-react'
+import { PlusIcon, TrashIcon } from 'lucide-react'
 import { Education } from '@/types/supabase-types'
 import { createClient } from "@/utils/supabase/client"
 

@@ -75,24 +75,25 @@ export type TechnologyImage = {
 };
 
 export type PortfolioData = {
-    user_id?: string; // Primary key, references `auth.users.id`
+    user_id: string; // Primary key, references `auth.users.id`
     primary_color: string | null; // Portfolio primary color
     secondary_color: string | null; // Portfolio secondary color
-    is_saved: boolean; // Whether the portfolio is saved
-    is_deployed: boolean; // Whether the portfolio is deployed
+    is_saved: boolean | null; // Whether the portfolio is saved
+    is_deployed: boolean | null; // Whether the portfolio is deployed
     deployed_at: string | null; // Timestamp of deployment
-    updated_at: string; // Auto-updated timestamp
-    created_at: string; // Creation timestamp
+    updated_at: string | null; // Auto-updated timestamp
+    created_at: string | null; // Creation timestamp
     user_info_component: string;
     education_component: string;
     experiences_component: string;
     projects_component: string;
     skills_component: string;
+    slug: string | null;
 };
 
 export type Payload = {
     userInfo: {
-        user_id?: string; // References `auth.users.id`
+        user_id: string; // References `auth.users.id`
         full_name: string;
         email: string;
         title: string | null;
@@ -106,7 +107,7 @@ export type Payload = {
     };
     educations: {
         id?: string; // Primary key
-        user_id?: string; // References `auth.users.id`
+        user_id: string; // References `auth.users.id`
         degree: string;
         university: string;
         start_year: string;
@@ -116,7 +117,7 @@ export type Payload = {
     }[];
     experiences: {
         id?: string; // Primary key
-        user_id?: string; // References `auth.users.id`
+        user_id: string; // References `auth.users.id`
         company: string;
         position: string;
         start_date: string;
@@ -126,7 +127,7 @@ export type Payload = {
     }[];
     projects: {
         id: string; // Primary key
-        user_id?: string; // References `auth.users.id`
+        user_id: string; // References `auth.users.id`
         name: string;
         description: string | null;
         github_link: string | null;
@@ -135,6 +136,7 @@ export type Payload = {
     }[];
     projectTechnologies: ProjectTechnology[];
     userTechnologies: UserTechnology[];
+    portfolioData: PortfolioData
 }
 
 export type UploadResult = {
