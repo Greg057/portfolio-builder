@@ -19,6 +19,7 @@ import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Project } from '@/types/supabase-types';
 import { v4 as uuidv4 } from 'uuid';
+import { createClient } from '@/utils/supabase/client';
 
 // Initial list of all available technologies
 const initialAvailableTechnologies = [
@@ -54,6 +55,8 @@ export default function ProjectSection({
         live_link: null,
         technologies: [],
         availableTechnologies: [...initialAvailableTechnologies], // Initialize with the full available list
+        picUrl: null,
+        picFile: null
       },
     ]);
   };
@@ -103,6 +106,25 @@ export default function ProjectSection({
     );
   };
 
+  const handlePicUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+        const supabase = createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+  
+        if (!user) {
+          alert("You need to sign in to upload files")
+          return;
+        }
+              
+        const file = e.target.files?.[0];
+        if (file) {
+          setProjects(projects.map((item, i) => 
+            i === index ? { ...item, picFile: file } : item
+          ))
+        }
+      }
+
   return (
     <Card>
       <CardHeader>
@@ -143,6 +165,20 @@ export default function ProjectSection({
                 />
               </div>
             </div>
+            <div className="space-y-2">
+                <Label htmlFor={`logo-upload-${index}`}>Upload Picture</Label>
+                <Input
+                  id={`logo-upload-${index}`}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handlePicUpload(e, index)}
+                />
+                {proj.picFile && (
+                  <p className="text-sm text-muted-foreground">
+                    Selected file: {proj.picFile.name}
+                  </p>
+                )}
+              </div>
             <div className="space-y-2">
               <Label>Description</Label>
               <Textarea

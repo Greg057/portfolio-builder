@@ -37,7 +37,7 @@ export default function OnboardingPage() {
   })
   const [educations, setEducations] = useState<Education[]>([{ degree: '', university: '', start_year: '', end_year: '', description: null, logoUrl: null, logoFile: null }])
   const [experiences, setExperiences] = useState<WorkExperience[]>([{ company: '', position: '', start_date: '', end_date: '', description: null, logoUrl: null, logoFile: null }])
-  const [projects, setProjects] = useState<Project[]>([{ id: uuidv4(), name: '', description: '', github_link: '', live_link: '', technologies: [], availableTechnologies: initialAvailableTechnologies }])
+  const [projects, setProjects] = useState<Project[]>([{ id: uuidv4(), name: '', description: '', github_link: '', live_link: '', technologies: [], availableTechnologies: initialAvailableTechnologies, picUrl: null, picFile: null }])
   const [userTechnologies, setUserTechnologies] = useState<UserTechnology[]>([{ technology_id: null }])
 
   const router = useRouter()
@@ -129,6 +129,27 @@ export default function OnboardingPage() {
     return await uploadPublicFile(file, path);
   };
 
+  const uploadProjectPic = async (
+    file: File,
+    userId: string,
+    project: string
+  ): Promise<UploadResult> => {
+    // Extract file extension from the file name
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    const validExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+  
+    if (!fileExtension || !validExtensions.includes(fileExtension)) {
+      throw new Error('Invalid logo file type. Supported types: jpg, jpeg, png, webp, gif.');
+    }
+  
+    // Create a sanitized path for the education logo upload
+    const sanitizedProject = project.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const path = `${userId}/project/${sanitizedProject}.${fileExtension}`;
+  
+    // Use the generic file upload function
+    return await uploadPublicFile(file, path);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('handle submit called')
@@ -186,7 +207,8 @@ export default function OnboardingPage() {
             name: proj.name.trim(),
             description: proj.description?.trim() || null,
             github_link: proj.github_link?.trim() || null,
-            live_link: proj.live_link?.trim() || null
+            live_link: proj.live_link?.trim() || null,
+            picUrl: proj.picUrl?.trim() || null
           },
           projectTechnologies: proj.technologies.map((techID) => ({
             project_id: proj.id,
@@ -294,12 +316,12 @@ export default function OnboardingPage() {
                   return { ...expData }; // Exclude logoFile
                 }
         
-                console.log(`Education logo successfully uploaded for company "${exp.company}":`, logoPath);
+                console.log(`Experiences logo successfully uploaded for company "${exp.company}":`, logoPath);
         
                 // Add the logo URL to the education object
                 return { ...expData, logoUrl: logoPath }; // Include logoUrl, exclude logoFile
               } catch (error) {
-                console.error(`Unexpected error during education logo upload for university "${exp.company}":`, (error as Error).message);
+                console.error(`Unexpected error during education logo upload for experience "${exp.company}":`, (error as Error).message);
                 return { ...expData }; // Exclude logoFile
               }
             }
@@ -309,6 +331,56 @@ export default function OnboardingPage() {
         );
         
         payload.experiences = updatedExperiences;
+
+
+        const updatedProjects = await Promise.all(
+          projects.map(async (proj) => {
+            // Extract picFile and the rest of the properties
+            const { picFile, ...projData } = proj;
+        
+            if (picFile) {
+              try {
+                // Upload the project picture
+                const { publicUrl: picUrl, error } = await uploadProjectPic(picFile, userId, proj.name);
+        
+                if (error) {
+                  console.error(`Error uploading pic for project "${proj.name}":`, error.message);
+                  return { ...projData }; // Exclude picFile, return other properties
+                }
+        
+                console.log(`Project pic successfully uploaded for project "${proj.name}":`, picUrl);
+        
+                // Include picUrl in the project data
+                return { ...projData, picUrl };
+              } catch (error) {
+                console.error(`Unexpected error during project pic upload for project "${proj.name}":`, (error as Error).message);
+                return { ...projData }; // Exclude picFile on error
+              }
+            }
+        
+            // If no picFile exists, return the project data as is
+            return { ...projData };
+          })
+        );
+        
+        // Update the payload's projects field
+        payload.projects = updatedProjects
+          .filter((proj) => proj.name.trim()) // Ensure valid projects
+          .map((proj) => ({
+            project: {
+              id: proj.id,
+              name: proj.name.trim(),
+              description: proj.description?.trim() || null,
+              github_link: proj.github_link?.trim() || null,
+              live_link: proj.live_link?.trim() || null,
+              picUrl: proj.picUrl?.trim() || null,
+            },
+            projectTechnologies: proj.technologies.map((techID) => ({
+              project_id: proj.id,
+              technology_id: techID,
+            })),
+          }));
+        
         
 
         

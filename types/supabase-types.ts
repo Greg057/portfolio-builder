@@ -35,7 +35,9 @@ export type Project = {
     live_link: string | null; // Optional live project link
     technologies: number[]; // Array of technology IDs
     availableTechnologies: {value: number, label: string}[];
-    technologyNames?: string[]
+    technologyNames?: string[];
+    picUrl: string | null;
+    picFile: File | null
 };
 
 export type Education = {
@@ -129,6 +131,7 @@ export type Payload = {
         description: string | null;
         github_link: string | null;
         live_link: string | null;
+        picUrl: string | null
     }[];
     projectTechnologies: ProjectTechnology[];
     userTechnologies: UserTechnology[];
