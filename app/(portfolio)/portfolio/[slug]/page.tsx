@@ -1,3 +1,4 @@
+import { createClient } from "@/utils/supabase/client";
 import PortfolioDisplay from "./PortfolioDisplay";
 
 export default async function Portfolio({
@@ -7,8 +8,19 @@ export default async function Portfolio({
 }) {
     const slug = (await params).slug
 
+    const supabase = createClient();
+    const { data, error } = await supabase
+        .from("portfolio_data")
+        .select("user_id")
+        .eq("slug", slug)
+        .single();
+
+    if (error || !data) return null;
+
+    const userId = data.user_id
+
     return (
-        <PortfolioDisplay slug={slug} />
+        <PortfolioDisplay userId={userId} />
     );
 }
 
