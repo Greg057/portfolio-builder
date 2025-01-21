@@ -39,12 +39,12 @@ export default function PortfolioPage({
         <EducationComponent education={education} />
       )} 
 
-      {projects && (
-        <ProjectsComponent projects={projects} />
-      )} 
-
       {userTechnologies && (
         <UserSkillsComponent userTechnologies={userTechnologies} />
+      )} 
+
+      {projects && (
+        <ProjectsComponent projects={projects} />
       )} 
     </div>
   )

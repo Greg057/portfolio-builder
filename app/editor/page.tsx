@@ -43,8 +43,8 @@ const sections = [
   { name: 'User Info', key: 'userInfo', components: userInfoComponents },
   { name: 'Work Experience', key: 'workExperience', components: workExperienceComponents },
   { name: 'Education', key: 'education', components: educationComponents },
-  { name: 'Projects', key: 'projects', components: projectsComponents },
   { name: 'User Skills', key: 'userSkills', components: userSkillsComponents },
+  { name: 'Projects', key: 'projects', components: projectsComponents },
 ]
 
 export default function PortfolioEditor() {
@@ -158,7 +158,6 @@ export default function PortfolioEditor() {
     }
     
     fetchAndSaveAll()
-    
   }, []);
   
 
