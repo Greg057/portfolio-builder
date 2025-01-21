@@ -31,6 +31,7 @@ export const initializePayload = async (user: User | null, userInfo: UserInfo, e
 				end_year: edu.end_year.trim(),
 				description: edu.description?.trim() || null,
 				logoUrl: edu.logoUrl?.trim() || null,
+				logoFile: edu.logoFile || null,
 			})),
 		experiences: experiences
 			.filter(
@@ -45,6 +46,7 @@ export const initializePayload = async (user: User | null, userInfo: UserInfo, e
 				end_date: exp.end_date.trim(),
 				description: exp.description?.trim() || null,
 				logoUrl: exp.logoUrl?.trim() || null,
+				logoFile: exp.logoFile || null,	
 			})),
 		projects: projects
 			.filter((proj) => proj.name.trim())
@@ -56,7 +58,8 @@ export const initializePayload = async (user: User | null, userInfo: UserInfo, e
 					description: proj.description?.trim() || null,
 					github_link: proj.github_link?.trim() || null,
 					live_link: proj.live_link?.trim() || null,
-					picUrl: proj.picUrl?.trim() || null
+					picUrl: proj.picUrl?.trim() || null,
+					picFile: proj.picFile || null,
 				},
 				projectTechnologies: proj.technologies.map((techID) => ({
 					project_id: proj.id,
@@ -73,18 +76,18 @@ export const initializePayload = async (user: User | null, userInfo: UserInfo, e
 			skills_component: "Skills1",
 		}
 	};
-
+	
+	payload.projectTechnologies = payload.projects.map((proj: any) => proj.projectTechnologies).flat()
 	payload.projects = payload.projects.map((proj: any) => proj.project)
-	payload.projectTechnologies = payload.projects.flatMap((proj: any) => proj.projectTechnologies)
 
 	if (user) {
 		const updateFiles = async (userId: string) => {
 			const updatedFiles = await Promise.all([
-				uploadAvatarFile(userId, userInfo),
-				uploadCvFile(userId, userInfo),
-				uploadEducationLogos(userId, educations),
-				uploadCompanyLogos(userId, experiences),
-				uploadProjectPics(userId, projects),
+				uploadAvatarFile(userId, userInfo.avatarFile),
+				uploadCvFile(userId, userInfo.cvFile),
+				uploadEducationLogos(userId, payload.educations),
+				uploadCompanyLogos(userId, payload.experiences),
+				uploadProjectPics(userId, payload.projects),
 			]);
 
 			payload.userInfo.avatarUrl = updatedFiles[0];
@@ -97,6 +100,18 @@ export const initializePayload = async (user: User | null, userInfo: UserInfo, e
 		await updateFiles(user.id);
 		console.log('Files successfully uploaded to Supabase for authenticated user');
 	}
+
+	payload.educations.forEach((edu: any) => {
+		delete edu.logoFile;
+	});
+	  
+	payload.experiences.forEach((exp: any) => {
+		delete exp.logoFile;
+	});
+	  
+	payload.projects.forEach((proj: any) => {
+		delete proj.picFile;
+	});
 
 	return payload
 }

@@ -21,15 +21,16 @@ const uploadPublicFile = async (file: File, path: string): Promise<UploadResult>
 const uploadFileWithValidation = async (
   file: File,
   userId: string,
-  fileType: 'avatar' | 'cv' | 'logo' | 'projectPic',
+  fileType: 'avatar' | 'cv' | 'edu' | 'exp' | 'proj',
   name?: string
 ): Promise<UploadResult> => {
   const fileExtension = file.name.split('.').pop()?.toLowerCase();
-  const validExtensions: { [key in 'avatar' | 'cv' | 'logo' | 'projectPic']: string[] } = {
+  const validExtensions: { [key in 'avatar' | 'cv' | 'edu' | 'exp' | 'proj']: string[] } = {
     avatar: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
     cv: ['pdf', 'doc', 'docx'],
-    logo: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
-    projectPic: ['jpg', 'jpeg', 'png', 'webp', 'gif']
+    edu: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+    exp: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+	proj: ['jpg', 'jpeg', 'png', 'webp', 'gif']
   };
 
   if (!fileExtension || !validExtensions[fileType].includes(fileExtension)) {
@@ -46,10 +47,13 @@ const uploadFileWithValidation = async (
     case 'cv':
       path = `${userId}/cv.${fileExtension}`;
       break;
-    case 'logo':
+    case 'edu':
       path = `${userId}/education/${sanitizedName}.${fileExtension}`;
       break;
-    case 'projectPic':
+	case 'exp':
+      path = `${userId}/experience/${sanitizedName}.${fileExtension}`;
+      break;
+    case 'proj':
       path = `${userId}/project/${sanitizedName}.${fileExtension}`;
       break;
   }
@@ -57,10 +61,10 @@ const uploadFileWithValidation = async (
   return await uploadPublicFile(file, path);
 };
 
-export const uploadAvatarFile = async (userId: string, userInfo: UserInfo) => {
-	if (userInfo.avatarFile) {
+export const uploadAvatarFile = async (userId: string, avatarFile: File | null) => {
+	if (avatarFile) {
 		try {
-			const { publicUrl: avatarPath, error } = await uploadFileWithValidation(userInfo.avatarFile, userId, 'avatar');
+			const { publicUrl: avatarPath, error } = await uploadFileWithValidation(avatarFile, userId, 'avatar');
 			if (!error) {
 				return avatarPath;
 			}
@@ -72,10 +76,10 @@ export const uploadAvatarFile = async (userId: string, userInfo: UserInfo) => {
 	return null
 };
 
-export const uploadCvFile = async (userId: string, userInfo: UserInfo) => {
-	if (userInfo.cvFile) {
+export const uploadCvFile = async (userId: string, cvFile: File | null) => {
+	if (cvFile) {
 		try {
-			const { publicUrl: cvPath, error } = await uploadFileWithValidation(userInfo.cvFile, userId, 'cv');
+			const { publicUrl: cvPath, error } = await uploadFileWithValidation(cvFile, userId, 'cv');
 			if (!error) {
 				return cvPath;
 			}
@@ -87,18 +91,17 @@ export const uploadCvFile = async (userId: string, userInfo: UserInfo) => {
 	return null
 };
 
-export const uploadEducationLogos = async (userId: string, educations: Education[]) => {
+export const uploadEducationLogos = async (userId: string, payloadEducations: any) => {
 	return await Promise.all(
-		educations.map(async (edu) => {
+		payloadEducations.map(async (edu: any) => {
 			const { logoFile, ...eduData } = edu;
 			if (logoFile) {
 				try {
-					const { publicUrl: logoPath, error } = await uploadFileWithValidation(logoFile, userId, 'logo', edu.university);
+					const { publicUrl: logoPath, error } = await uploadFileWithValidation(logoFile, userId, 'edu', edu.university);
 					if (error) {
 						console.error(`Error uploading logo for university "${edu.university}":`, error.message);
 						return { ...eduData };
 					}
-					console.log(`Education logo successfully uploaded for university "${edu.university}":`, logoPath);
 					return { ...eduData, logoUrl: logoPath };
 				} catch (error) {
 					console.error(`Unexpected error during education logo upload for university "${edu.university}":`, (error as Error).message);
@@ -110,18 +113,17 @@ export const uploadEducationLogos = async (userId: string, educations: Education
 	);
 };
 
-export const uploadCompanyLogos = async (userId: string, experiences: WorkExperience[]) => {
+export const uploadCompanyLogos = async (userId: string, payloadExperiences: any) => {
 	return await Promise.all(
-		experiences.map(async (exp) => {
+		payloadExperiences.map(async (exp: any) => {
 			const { logoFile, ...expData } = exp;
 			if (logoFile) {
 				try {
-					const { publicUrl: logoPath, error } = await uploadFileWithValidation(logoFile, userId, 'logo', exp.company);
+					const { publicUrl: logoPath, error } = await uploadFileWithValidation(logoFile, userId, 'exp', exp.company);
 					if (error) {
 						console.error(`Error uploading logo for company "${exp.company}":`, error.message);
 						return { ...expData };
 					}
-					console.log(`Company logo successfully uploaded for company "${exp.company}":`, logoPath);
 					return { ...expData, logoUrl: logoPath };
 				} catch (error) {
 					console.error(`Unexpected error during company logo upload for company "${exp.company}":`, (error as Error).message);
@@ -133,19 +135,18 @@ export const uploadCompanyLogos = async (userId: string, experiences: WorkExperi
 	);
 };
 
-export const uploadProjectPics = async (userId: string, projects: Project[]) => {
+export const uploadProjectPics = async (userId: string, payloadProjects: any) => {
 	return await Promise.all(
-		projects.map(async (proj) => {
+		payloadProjects.map(async (proj: any) => {
 			const { picFile, ...projData } = proj;
 			if (picFile) {
 				try {
-					const { publicUrl: picUrl, error } = await uploadFileWithValidation(picFile, userId, 'projectPic', proj.name);
+					const { publicUrl: picPath, error } = await uploadFileWithValidation(picFile, userId, 'proj', proj.name);
 					if (error) {
 						console.error(`Error uploading pic for project "${proj.name}":`, error.message);
 						return { ...projData };
 					}
-					console.log(`Project pic successfully uploaded for project "${proj.name}":`, picUrl);
-					return { ...projData, picUrl };
+					return { ...projData, picUrl: picPath };
 				} catch (error) {
 					console.error(`Unexpected error during project pic upload for project "${proj.name}":`, (error as Error).message);
 					return { ...projData };

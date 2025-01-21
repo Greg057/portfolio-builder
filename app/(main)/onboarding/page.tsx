@@ -47,7 +47,6 @@ export default function OnboardingPage() {
 
     if (!user) {
       sessionStorage.setItem('userSessionData', JSON.stringify(payload));
-      console.log('Data saved to userSessionData since anonymous user');
       router.push('/editor')
     } 
     
@@ -73,8 +72,6 @@ export default function OnboardingPage() {
 
         const { error: portfolioError } = await supabase.from("portfolio_data").upsert(payload.portfolioData, { onConflict: "user_id" })
         if (portfolioError) throw portfolioError;
-
-        console.log('Data successfully saved to Supabase for authenticated user');
 
         router.push('/editor')
 

@@ -16,7 +16,7 @@ export default function UserInfoSection({
     setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>;
 }) {
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, field: 'avatar' | 'cv') => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, field: 'avatarFile' | 'cvFile') => {
     const supabase = createClient();
     const {
       data: { user },
@@ -120,7 +120,7 @@ export default function UserInfoSection({
             id="avatar"
             type="file"
             accept="image/*"
-            onChange={(e) => handleFileChange(e, 'avatar')}
+            onChange={(e) => handleFileChange(e, 'avatarFile')}
           />
           {userInfo.avatarFile && (
             <p className="text-sm text-muted-foreground">
@@ -137,7 +137,7 @@ export default function UserInfoSection({
               type="file"
               accept=".pdf,.doc,.docx"
               className="pl-8"
-              onChange={(e) => handleFileChange(e, 'cv')}
+              onChange={(e) => handleFileChange(e, 'cvFile')}
             />
           </div>
           {userInfo.cvFile && (
