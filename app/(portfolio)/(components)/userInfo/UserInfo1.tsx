@@ -45,12 +45,12 @@ export default function UserInfo1({ personalInfo }: { personalInfo: UserInfo }) 
   }, []);
 
   return (
-    <header className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-background to-background/50">
+    <header className="py-20 flex flex-col items-center justify-center">
         <Avatar className="w-32 h-32 mx-auto mb-8 border-4 border-primary" >
           <AvatarImage src={avatarUrl} alt={`${personalInfo.full_name}'s avatar`} />
           <AvatarFallback>{personalInfo.full_name.charAt(0)}</AvatarFallback>
         </Avatar>
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 bg-clip-text">
           {personalInfo.full_name}
         </h1>
         {personalInfo.title && (
@@ -89,8 +89,7 @@ export default function UserInfo1({ personalInfo }: { personalInfo: UserInfo }) 
               </a>
             </Button>
           )}
-        </div>
-        {cvUrl && (
+          {cvUrl && (
           <Button className="mb-12" asChild>
             <a href={cvUrl} download aria-label="Download CV">
               <Download className="h-5 w-5 mr-2" />
@@ -98,12 +97,12 @@ export default function UserInfo1({ personalInfo }: { personalInfo: UserInfo }) 
             </a>
           </Button>
         )}
-        <h2 className="text-3xl font-bold mb-8">About Me</h2>
-        <Card className="bg-card">
-          <CardContent className="prose prose-lg dark:prose-invert">
-            <p>{personalInfo?.about_me}</p>
-          </CardContent>
-        </Card>
+        </div>
+        {personalInfo.about_me && ( 
+          <p className="mx-auto text-center px-[15%]">
+            {personalInfo.about_me}
+          </p>
+        )}
     </header>
   )
 }
