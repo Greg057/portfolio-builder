@@ -1,10 +1,10 @@
-import { Education, Project, UploadResult, UserInfo, WorkExperience } from "@/types/supabase-types";
+import { UploadResult } from "@/types/supabase-types";
 import { createClient } from "@/utils/supabase/client";
 
 const uploadPublicFile = async (file: File, path: string): Promise<UploadResult> => {
   const supabase = createClient();
 
-  const { data, error } = await supabase.storage
+  const { error } = await supabase.storage
     .from('user-files')
     .upload(path, file, {
       upsert: true, // Overwrite if file exists
@@ -15,7 +15,14 @@ const uploadPublicFile = async (file: File, path: string): Promise<UploadResult>
     return { publicUrl: null, error };
   }
 
-  return { publicUrl: path, error: null };
+  const { data } = supabase
+		.storage
+		.from('user-files')
+		.getPublicUrl(path)
+
+	console.log(`publicUrl of ${path}:`, data.publicUrl)
+
+  return { publicUrl: data.publicUrl, error: null };
 };
 
 const uploadFileWithValidation = async (
