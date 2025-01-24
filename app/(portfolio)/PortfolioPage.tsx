@@ -26,7 +26,7 @@ export default function PortfolioPage({
   userTechnologies
 }: PortfolioPageProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted text-foreground">
+    <div className="container max-w-[750px] px-4 sm:px-6 md:px-8">
       {personalInfo && (
         <UserInfoComponent personalInfo={personalInfo}/>
       )} 

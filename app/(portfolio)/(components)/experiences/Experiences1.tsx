@@ -11,7 +11,7 @@ export default function Experiences1({ experiences }: { experiences: WorkExperie
               <CardHeader className="flex flex-row items-center space-x-4 pb-4">
                 <div>
                   <CardTitle className="text-xl">{exp.company}</CardTitle>
-                  <CardDescription>{exp.position} | {exp.start_date}-{exp.end_date}</CardDescription>
+                  <CardDescription>{exp.position} | {exp.start_date} - {exp.end_date}</CardDescription>
                 </div>
               </CardHeader>
               {exp.description && (

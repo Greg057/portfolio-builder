@@ -105,7 +105,7 @@ export default function UserInfo1({ personalInfo }: { personalInfo: UserInfo }) 
       </div>
   
       {personalInfo.about_me && (
-        <p className="mx-auto text-center sm:px-[25%]">
+        <p className="mx-auto text-center">
           {personalInfo.about_me}
         </p>
       )}

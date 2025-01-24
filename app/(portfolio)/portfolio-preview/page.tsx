@@ -1,8 +1,9 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
+import PortfolioPage from '../PortfolioPage'
 
-export default function PortfolioPage() {
+export default function PortfolioPreviewPage() {
   const searchParams = useSearchParams()
   
   const UserInfoComponentName = searchParams.get('UserInfoComponent')
@@ -24,32 +25,21 @@ export default function PortfolioPage() {
   const userTechnologies = JSON.parse(searchParams.get('userTechnologies') || '[]')
 
   return (
-    <main className="flex flex-col min-h-[100dvh] space-y-10">
-      <section id="hero">
-        {personalInfo && (
-          <UserInfoComponent personalInfo={personalInfo}/>
-        )}
-      </section>
-      <section id="work">
-        {experiences && (
-          <WorkExperienceComponent experiences={experiences}/>
-        )} 
-      </section>
-      <section id="education">
-        {education && (
-          <EducationComponent education={education}/>
-        )} 
-      </section>
-      <section id="skills">
-        {userTechnologies && (
-          <UserSkillsComponent userTechnologies={userTechnologies}/>
-        )}
-      </section>
-      <section id="projects">
-        {projects && (
-          <ProjectsComponent projects={projects}/>
-        )} 
-      </section>
-    </main>
-  )
+    <>
+      {personalInfo && education && experiences && projects && userTechnologies && (
+        <PortfolioPage
+          UserInfoComponent={UserInfoComponent}
+          WorkExperienceComponent={WorkExperienceComponent}
+          EducationComponent={EducationComponent}
+          ProjectsComponent={ProjectsComponent}
+          UserSkillsComponent={UserSkillsComponent}
+          personalInfo={personalInfo}
+          education={education}
+          experiences={experiences}
+          projects={projects}
+          userTechnologies={userTechnologies}
+        />
+      )}
+    </>
+  );
 }
