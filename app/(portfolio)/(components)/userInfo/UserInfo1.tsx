@@ -1,4 +1,4 @@
-import { Mail, Github, Linkedin, Download, MapPin } from 'lucide-react'
+import { Mail, Linkedin, Download, MapPin } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { UserInfo } from '@/types/supabase-types'
@@ -67,7 +67,7 @@ export default function UserInfo1({ personalInfo }: { personalInfo: UserInfo }) 
       </div>
   
       {personalInfo.about_me && (
-        <p className="mx-auto text-center">
+        <p className="text-center">
           {personalInfo.about_me}
         </p>
       )}
