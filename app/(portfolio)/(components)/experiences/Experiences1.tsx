@@ -14,8 +14,8 @@ export default function Experiences1({ experiences }: { experiences: WorkExperie
                 <Image
                   src={exp.logoUrl}
                   alt={`${exp.company} logo`}
-                  width={80}
-                  height={80}
+                  width={50}
+                  height={50}
                   className="rounded-full"
                 />
               )}
