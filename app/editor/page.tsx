@@ -8,9 +8,6 @@ import { EyeIcon, SaveIcon } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import UserInfo1 from '../(portfolio)/(components)/userInfo/UserInfo1'
 import UserInfo2 from '../(portfolio)/(components)/userInfo/UserInfo2'
-import Experiences1 from '../(portfolio)/(components)/experiences/Experiences1'
-import Education1 from '../(portfolio)/(components)/education/Education1'
-import Education2 from '../(portfolio)/(components)/education/Education2'
 import Projects1 from '../(portfolio)/(components)/projects/Projects1'
 import Skills1 from '../(portfolio)/(components)/skills/Skills1'
 import Link from 'next/link'
@@ -22,27 +19,22 @@ import {
 } from "@/components/ui/dialog"
 import AuthModal from './components/AuthModal'
 import DeployButton from './components/DeployButton'
-import Education3 from '../(portfolio)/(components)/education/Education3'
-import Education4 from '../(portfolio)/(components)/education/Education4'
-import Experiences2 from '../(portfolio)/(components)/experiences/Experiences2'
 import UserInfo3 from '../(portfolio)/(components)/userInfo/UserInfo3'
-import Experiences3 from '../(portfolio)/(components)/experiences/Experiences3'
-import Education5 from '../(portfolio)/(components)/education/Education5'
 import Projects2 from '../(portfolio)/(components)/projects/Projects2'
 import Skills2 from '../(portfolio)/(components)/skills/Skills2'
 import { fetchConfig, getUserTechNames, handleSave } from './utils/helpers'
 import { fetchUserData } from './utils/userData'
+import EducationWork1 from '../(portfolio)/(components)/educationWork/EducationWork1'
+import EducationWork2 from '../(portfolio)/(components)/educationWork/EducationWork2'
 
 const userInfoComponents = [UserInfo1, UserInfo2, UserInfo3]
-const workExperienceComponents = [Experiences1, Experiences2, Experiences3]
-const educationComponents = [Education1, Education2, Education3, Education4, Education5]
+const educationWorkComponents = [EducationWork1, EducationWork2]
 const projectsComponents = [Projects1, Projects2]
 const userSkillsComponents = [Skills1, Skills2]
 
 const sections = [
   { name: 'User Info', key: 'userInfo', components: userInfoComponents },
-  { name: 'Work Experience', key: 'workExperience', components: workExperienceComponents },
-  { name: 'Education', key: 'education', components: educationComponents },
+  { name: 'Education Work', key: 'educationWork', components: educationWorkComponents },
   { name: 'User Skills', key: 'userSkills', components: userSkillsComponents },
   { name: 'Projects', key: 'projects', components: projectsComponents },
 ]
@@ -55,8 +47,7 @@ export default function PortfolioEditor() {
   const [userTechnologies, setUserTechnologies] = useState<Technology[]>([]);
   const [selectedComponents, setSelectedComponents] = useState({
     userInfo: UserInfo1,
-    workExperience: Experiences1,
-    education: Education1,
+    educationWork: EducationWork1,
     projects: Projects1,
     userSkills: Skills1,
   })
@@ -113,9 +104,6 @@ export default function PortfolioEditor() {
         
             const { error: userTechnologiesError } = await supabase.from('user_technologies').insert(sessionData.userTechnologies);
             if (userTechnologiesError) throw userTechnologiesError;
-  
-            // const { error: portfolioError } = await supabase.from("portfolio_data").upsert(sessionData.portfolioData, { onConflict: "user_id" })
-            // if (portfolioError) throw portfolioError;
         
             sessionStorage.removeItem('userSessionData'); // Clear session data to avoid duplicate inserts
           } catch (error) {
@@ -138,8 +126,7 @@ export default function PortfolioEditor() {
 
         setSelectedComponents({
           userInfo: require(`@/app/(portfolio)/(components)/userInfo/${userComponents.user_info_component}`).default,
-          workExperience: require(`@/app/(portfolio)/(components)/experiences/${userComponents.experiences_component}`).default,
-          education: require(`@/app/(portfolio)/(components)/education/${userComponents.education_component}`).default,
+          educationWork: require(`@/app/(portfolio)/(components)/educationWork/${userComponents.education_work_component}`).default,
           projects: require(`@/app/(portfolio)/(components)/projects/${userComponents.projects_component}`).default,
           userSkills: require(`@/app/(portfolio)/(components)/skills/${userComponents.skills_component}`).default,
         })
@@ -179,8 +166,7 @@ export default function PortfolioEditor() {
               pathname: "/portfolio-preview",
               query: {
                 UserInfoComponent: selectedComponents.userInfo.name, 
-                WorkExperienceComponent: selectedComponents.workExperience.name, 
-                EducationComponent: selectedComponents.education.name,
+                educationWork: selectedComponents.educationWork.name, 
                 ProjectsComponent: selectedComponents.projects.name,
                 UserSkillsComponent: selectedComponents.userSkills.name,
                 personalInfo: JSON.stringify(personalInfo),
@@ -234,8 +220,7 @@ export default function PortfolioEditor() {
           {personalInfo && education && experiences && projects && userTechnologies && (
             <PortfolioPage
               UserInfoComponent={selectedComponents.userInfo}
-              WorkExperienceComponent={selectedComponents.workExperience}
-              EducationComponent={selectedComponents.education}
+              EducationWorkComponent={selectedComponents.educationWork}
               ProjectsComponent={selectedComponents.projects}
               UserSkillsComponent={selectedComponents.userSkills}
               personalInfo={personalInfo}

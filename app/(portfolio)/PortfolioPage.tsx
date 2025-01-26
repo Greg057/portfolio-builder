@@ -2,8 +2,7 @@ import { Education, Project, UserInfo, Technology, WorkExperience } from '@/type
 
 interface PortfolioPageProps {
   UserInfoComponent: React.ComponentType<{ personalInfo: UserInfo }>
-  WorkExperienceComponent: React.ComponentType<{ experiences: WorkExperience[] }>
-  EducationComponent: React.ComponentType<{ education: Education[] }>
+  EducationWorkComponent: React.ComponentType<{ education: Education[], experiences: WorkExperience[] }>
   ProjectsComponent: React.ComponentType<{ projects: Project[] }>
   UserSkillsComponent: React.ComponentType<{ userTechnologies: Technology[] }>
   personalInfo: UserInfo;
@@ -15,8 +14,7 @@ interface PortfolioPageProps {
 
 export default function PortfolioPage({
   UserInfoComponent,
-  WorkExperienceComponent,
-  EducationComponent,
+  EducationWorkComponent,
   ProjectsComponent,
   UserSkillsComponent,
   personalInfo,
@@ -31,12 +29,8 @@ export default function PortfolioPage({
         <UserInfoComponent personalInfo={personalInfo}/>
       )} 
 
-      {experiences && (
-        <WorkExperienceComponent experiences={experiences} />
-      )} 
-
-      {education && (
-        <EducationComponent education={education} />
+      {experiences && education && (
+        <EducationWorkComponent education={education} experiences={experiences} />
       )} 
 
       {userTechnologies && (

@@ -1,4 +1,4 @@
-import { Payload, PortfolioData, Project, Technology, UserTechnology } from "@/types/supabase-types";
+import { Payload, PortfolioData, UserTechnology } from "@/types/supabase-types";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner"
 
@@ -14,8 +14,7 @@ export const handleSave = async (selectedComponents: any, config: any = null) =>
           "portfolioSessionData",
           JSON.stringify({
             user_info_component: selectedComponents.userInfo.name,
-            education_component: selectedComponents.education.name,
-            experiences_component: selectedComponents.workExperience.name,
+            education_work_component: selectedComponents.educationWork.name,
             projects_component: selectedComponents.projects.name,
             skills_component: selectedComponents.userSkills.name,
           })
@@ -25,8 +24,7 @@ export const handleSave = async (selectedComponents: any, config: any = null) =>
 
       const componentsData = config || {
         user_info_component: selectedComponents.userInfo.name,
-        education_component: selectedComponents.education.name,
-        experiences_component: selectedComponents.workExperience.name,
+        education_work_component: selectedComponents.educationWork.name,
         projects_component: selectedComponents.projects.name,
         skills_component: selectedComponents.userSkills.name
       };
@@ -55,8 +53,7 @@ export const fetchConfig = async (selectedComponents: any, setSelectedComponents
 
 		setSelectedComponents({
 			userInfo: require(`@/app/(portfolio)/(components)/userInfo/${parsedConfig.user_info_component}`).default,
-			education: require(`@/app/(portfolio)/(components)/education/${parsedConfig.education_component}`).default,
-			workExperience: require(`@/app/(portfolio)/(components)/experiences/${parsedConfig.experiences_component}`).default,
+			educationWork: require(`@/app/(portfolio)/(components)/educationWork/${parsedConfig.education_work_component}`).default,
 			projects: require(`@/app/(portfolio)/(components)/projects/${parsedConfig.projects_component}`).default,
 			userSkills: require(`@/app/(portfolio)/(components)/skills/${parsedConfig.skills_component}`).default,
 		});

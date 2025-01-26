@@ -7,14 +7,12 @@ export default function PortfolioPreviewPage() {
   const searchParams = useSearchParams()
   
   const UserInfoComponentName = searchParams.get('UserInfoComponent')
-  const WorkExperienceComponentName = searchParams.get('WorkExperienceComponent')
-  const EducationComponentName = searchParams.get('EducationComponent')
+  const EducationWorkComponentName = searchParams.get('EducationWorkComponent')
   const ProjectsComponentName = searchParams.get('ProjectsComponent')
   const UserSkillsComponentName = searchParams.get('UserSkillsComponent')
 
   const UserInfoComponent = require(`../(components)/userInfo/${UserInfoComponentName}`).default
-  const WorkExperienceComponent = require(`../(components)/experiences/${WorkExperienceComponentName}`).default
-  const EducationComponent = require(`../(components)/education/${EducationComponentName}`).default
+  const EducationWorkComponent = require(`../(components)/educationWork/${EducationWorkComponentName}`).default
   const ProjectsComponent = require(`../(components)/projects/${ProjectsComponentName}`).default
   const UserSkillsComponent = require(`../(components)/skills/${UserSkillsComponentName}`).default
 
@@ -29,8 +27,7 @@ export default function PortfolioPreviewPage() {
       {personalInfo && education && experiences && projects && userTechnologies && (
         <PortfolioPage
           UserInfoComponent={UserInfoComponent}
-          WorkExperienceComponent={WorkExperienceComponent}
-          EducationComponent={EducationComponent}
+          EducationWorkComponent={EducationWorkComponent}
           ProjectsComponent={ProjectsComponent}
           UserSkillsComponent={UserSkillsComponent}
           personalInfo={personalInfo}

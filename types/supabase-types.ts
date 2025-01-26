@@ -84,8 +84,7 @@ export type PortfolioData = {
     updated_at: string | null; // Auto-updated timestamp
     created_at: string | null; // Creation timestamp
     user_info_component: string;
-    education_component: string;
-    experiences_component: string;
+    education_work_component: string;
     projects_component: string;
     skills_component: string;
     slug: string | null;

@@ -5,7 +5,7 @@ import type { UserInfo } from "@/types/supabase-types"
 
 export default function UserInfo2({ personalInfo }: { personalInfo: UserInfo }) {
   return (
-    <div className="max-w-4xl mx-auto px-4 my-20">
+    <div className="max-w-4xl mx-auto my-20">
       <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
         <Avatar className="w-40 h-40 border-4 border-primary">
           <AvatarImage src={personalInfo.avatarUrl || undefined} alt={`${personalInfo.full_name}'s avatar`} />

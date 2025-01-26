@@ -70,8 +70,7 @@ export const initializePayload = async (user: User | null, userInfo: UserInfo, e
 		portfolioData: {
 			user_id: userId,
 			user_info_component: "UserInfo1",
-			education_component: "Education1",
-			experiences_component: "Experiences1",
+			education_work_component: "EducationWork1",
 			projects_component: "Projects1",
 			skills_component: "Skills1",
 		}

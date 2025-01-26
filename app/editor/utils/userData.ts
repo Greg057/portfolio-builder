@@ -48,7 +48,7 @@ export const fetchUserData = async (userId: string): Promise<any> => {
 
 		const { data: userComponents, error: userComponentError } = await supabase
 			.from("portfolio_data")
-			.select("user_info_component, education_component, experiences_component, projects_component, skills_component")
+			.select("user_info_component, education_work_component, projects_component, skills_component")
 			.eq("user_id", userId)
 			.single();
 
