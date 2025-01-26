@@ -6,6 +6,7 @@ import { Github, ExternalLinkIcon } from 'lucide-react'
 import BlurFade from '@/components/ui/blur-fade'
 import Link from 'next/link'
 import { cn } from '@/utils/cn'
+import Image from 'next/image'
 
 const BLUR_FADE_DELAY = 0.04;
 
@@ -39,15 +40,15 @@ export default function Projects2({ projects }: { projects: Project[] }) {
 									href={project.live_link || "#"}
 									className={cn("block cursor-pointer")}
 								>
-									{/* {project.image && (
+									{project.picUrl && (
 										<Image
-											src={image}
-											alt={title}
+											src={project.picUrl}
+											alt={project.name}
 											width={500}
 											height={300}
 											className="h-40 w-full overflow-hidden object-cover object-top"
 										/>
-									)} */}
+									)}
 								</Link>
 								<CardHeader className="px-2">
 									<div className="space-y-1">

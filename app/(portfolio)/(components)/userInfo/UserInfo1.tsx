@@ -6,7 +6,7 @@ import { UserInfo } from '@/types/supabase-types'
 export default function UserInfo1({ personalInfo }: { personalInfo: UserInfo }) {
 
   return (
-    <header className="py-20 px-3 flex flex-col items-center justify-center">
+    <header className="my-20 px-3 flex flex-col items-center justify-center">
       <Avatar className="w-32 h-32 mx-auto mb-8 border-4 border-primary">
         <AvatarImage src={personalInfo.avatarUrl || undefined} alt={`${personalInfo.full_name}'s avatar`} />
         <AvatarFallback>{personalInfo.full_name.charAt(0)}</AvatarFallback>

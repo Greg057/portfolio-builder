@@ -4,8 +4,8 @@ import Image from 'next/image';
 
 export default function Experiences1({ experiences }: { experiences: WorkExperience[] }) {
   return (
-    <section id="experience" className="mb-20">
-      <h2 className="text-3xl font-bold mb-8">Work Experience</h2>
+    <section id="experience" className="mb-14">
+      <h2 className="text-3xl font-bold mb-5">Work Experience</h2>
       <div className="space-y-8">
         {experiences.map((exp, index) => (
           <Card key={exp.id || index} className="bg-card overflow-hidden">
