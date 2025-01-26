@@ -1,4 +1,4 @@
-import { Mail, Linkedin, Download, MapPin } from 'lucide-react'
+import { Mail, Linkedin, MapPin, FileDown } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { UserInfo } from '@/types/supabase-types'
@@ -59,8 +59,8 @@ export default function UserInfo1({ personalInfo }: { personalInfo: UserInfo }) 
         {personalInfo.cvUrl && (
           <Button asChild>
             <a href={personalInfo.cvUrl} target="_blank" download aria-label="View CV">
-              <Download className="h-5 w-5 mr-2" />
-              View CV
+              <FileDown className="mr-2 size-5" />
+              Resume
             </a>
           </Button>
         )}
