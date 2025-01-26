@@ -6,7 +6,7 @@ export default function EducationWork2({ education, experiences }: { education: 
   return (
 		<>
 			<section id="experience" className="my-20">
-				<h2 className="text-3xl font-bold mb-10 text-center">Work Experience</h2>
+				<h2 className="text-2xl font-bold mb-10 text-center">Work Experience</h2>
 				<div className="space-y-16">
 					{experiences.map((exp, index) => (
 						<div key={exp.id || index} className="relative">
@@ -42,7 +42,7 @@ export default function EducationWork2({ education, experiences }: { education: 
 				</div>
 			</section>
 			<section id="experience" className="my-20">
-				<h2 className="text-3xl font-bold mb-10 text-center">Education</h2>
+				<h2 className="text-2xl font-bold mb-10 text-center">Education</h2>
 				<div className="space-y-16">
 					{education.map((edu, index) => (
 						<div key={edu.id || index} className="relative">

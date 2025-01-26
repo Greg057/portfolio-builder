@@ -7,7 +7,7 @@ import { Github, ExternalLinkIcon } from 'lucide-react'
 export default function Projects1({ projects }: { projects: Project[] }) {
     return (
         <section id="projects" className="mb-14">
-            <h2 className="text-3xl font-bold mb-5">Projects</h2>
+            <h2 className="text-2xl font-bold mb-5">Projects</h2>
             <div className="grid md:grid-cols-2 gap-8">
               {projects.map((project, index) => (
                   <Card key={project.id || index} className="bg-card h-full flex flex-col">

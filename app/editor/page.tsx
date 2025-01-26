@@ -26,9 +26,10 @@ import { fetchConfig, getUserTechNames, handleSave } from './utils/helpers'
 import { fetchUserData } from './utils/userData'
 import EducationWork1 from '../(portfolio)/(components)/educationWork/EducationWork1'
 import EducationWork2 from '../(portfolio)/(components)/educationWork/EducationWork2'
+import EducationWork3 from '../(portfolio)/(components)/educationWork/EducationWork3'
 
 const userInfoComponents = [UserInfo1, UserInfo2, UserInfo3]
-const educationWorkComponents = [EducationWork1, EducationWork2]
+const educationWorkComponents = [EducationWork1, EducationWork2, EducationWork3]
 const projectsComponents = [Projects1, Projects2]
 const userSkillsComponents = [Skills1, Skills2]
 
