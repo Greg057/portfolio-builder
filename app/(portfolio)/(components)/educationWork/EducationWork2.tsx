@@ -6,11 +6,11 @@ export default function EducationWork2({ education, experiences }: { education: 
   return (
 		<>
 			<section id="experience" className="my-20">
-				<h2 className="text-2xl font-bold mb-10 text-center">Work Experience</h2>
+				<h2 className="text-2xl font-bold mb-5">Work Experience</h2>
 				<div className="space-y-16">
 					{experiences.map((exp, index) => (
 						<div key={exp.id || index} className="relative">
-							<div className="absolute left-0 top-0 w-[3px] h-full bg-primary rounded-full opacity-10" />
+							<div className="absolute left-0 top-0 w-[3px] h-2/3 bg-primary rounded-full opacity-10" />
 							<div className="pl-8">
 								<div className="flex flex-col md:flex-row md:items-center mb-4">
 									<div className="flex items-center mb-2 md:mb-0">
@@ -42,11 +42,11 @@ export default function EducationWork2({ education, experiences }: { education: 
 				</div>
 			</section>
 			<section id="experience" className="my-20">
-				<h2 className="text-2xl font-bold mb-10 text-center">Education</h2>
+				<h2 className="text-2xl font-bold mb-5">Education</h2>
 				<div className="space-y-16">
 					{education.map((edu, index) => (
 						<div key={edu.id || index} className="relative">
-							<div className="absolute left-0 top-0 w-[3px] h-full bg-primary rounded-full opacity-10" />
+							<div className="absolute left-0 top-0 w-[3px] h-2/3 bg-primary rounded-full opacity-10" />
 							<div className="pl-8">
 								<div className="flex flex-col md:flex-row md:items-center mb-4">
 									<div className="flex items-center mb-2 md:mb-0">

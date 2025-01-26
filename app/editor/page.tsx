@@ -27,9 +27,11 @@ import { fetchUserData } from './utils/userData'
 import EducationWork1 from '../(portfolio)/(components)/educationWork/EducationWork1'
 import EducationWork2 from '../(portfolio)/(components)/educationWork/EducationWork2'
 import EducationWork3 from '../(portfolio)/(components)/educationWork/EducationWork3'
+import UserInfo4 from '../(portfolio)/(components)/userInfo/UserInfo4'
+import EducationWork4 from '../(portfolio)/(components)/educationWork/EducationWork4'
 
-const userInfoComponents = [UserInfo1, UserInfo2, UserInfo3]
-const educationWorkComponents = [EducationWork1, EducationWork2, EducationWork3]
+const userInfoComponents = [UserInfo1, UserInfo2, UserInfo3, UserInfo4]
+const educationWorkComponents = [EducationWork1, EducationWork2, EducationWork3, EducationWork4]
 const projectsComponents = [Projects1, Projects2]
 const userSkillsComponents = [Skills1, Skills2]
 
@@ -167,7 +169,7 @@ export default function PortfolioEditor() {
               pathname: "/portfolio-preview",
               query: {
                 UserInfoComponent: selectedComponents.userInfo.name, 
-                educationWork: selectedComponents.educationWork.name, 
+                EducationWorkComponent: selectedComponents.educationWork.name, 
                 ProjectsComponent: selectedComponents.projects.name,
                 UserSkillsComponent: selectedComponents.userSkills.name,
                 personalInfo: JSON.stringify(personalInfo),

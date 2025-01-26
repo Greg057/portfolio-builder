@@ -10,7 +10,7 @@ export default function EducationWork1({ education, experiences }: { education: 
 				<div className="space-y-8">
 					{experiences.map((exp, index) => (
 						<Card key={exp.id || index} className="bg-card overflow-hidden">
-							<CardHeader className="flex flex-row items-center space-x-4 pb-4">
+							<CardHeader className="flex flex-row items-center space-x-4 py-4">
 								{exp.logoUrl && (
 									<Image
 										src={exp.logoUrl}
@@ -26,7 +26,7 @@ export default function EducationWork1({ education, experiences }: { education: 
 								</div>
 							</CardHeader>
 							{exp.description && (
-								<CardContent>
+								<CardContent className='pb-4'>
 									<p>{exp.description}</p>
 								</CardContent>
 							)}
@@ -39,7 +39,7 @@ export default function EducationWork1({ education, experiences }: { education: 
 				<div className="space-y-8">
 					{education.map((edu, index) => (
 						<Card key={edu.id || index} className="bg-card">
-							<CardHeader className="flex flex-row items-center space-x-4 pb-4">
+							<CardHeader className="flex flex-row items-center space-x-4 py-4">
 								{edu.logoUrl && (
 									<Image
 										src={edu.logoUrl}
@@ -57,7 +57,7 @@ export default function EducationWork1({ education, experiences }: { education: 
 								</div>
 							</CardHeader>
 							{edu.description && (
-								<CardContent className="prose prose-lg dark:prose-invert">
+								<CardContent className='pb-4'>
 									<p>{edu.description}</p>
 								</CardContent>
 							)}

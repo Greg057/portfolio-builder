@@ -1,28 +1,21 @@
 import type { WorkExperience, Education } from "@/types/supabase-types"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
-export default function EducationWork3({ education, experiences }: { education: Education[]; experiences: WorkExperience[] }) {
+export default function EducationWork4({ education, experiences }: { education: Education[]; experiences: WorkExperience[] }) {
   return (
-    <Tabs defaultValue="work" className="w-full mb-14">
-      <TabsList className="mb-2 grid w-full grid-cols-2">
-        <TabsTrigger value="work">Work Experience</TabsTrigger>
-        <TabsTrigger value="education">Education</TabsTrigger>
-      </TabsList>
-      <TabsContent value="work">
+    <section className="w-full">
+        <h2 className="text-2xl font-bold mb-6">Work Experience</h2>
         <Timeline items={experiences} type="work" />
-      </TabsContent>
-      <TabsContent value="education">
+				<h2 className="text-2xl font-bold mb-6">Education</h2>
         <Timeline items={education} type="education" />
-      </TabsContent>
-    </Tabs>
+    </section>
   )
 }
 
 function Timeline({ items, type }: { items: (WorkExperience | Education)[], type: "work" | "education" }) {
 	return (
-		<CardContent className="p-0">
+		<CardContent className="p-0 mb-14">
 			<ul className="ml-10 border-l">
 				{items.map((item, index) => (
 					<TimelineItem key={item.id || index} item={item} type={type} />
@@ -54,10 +47,10 @@ function TimelineItem({ item, type }: { item: WorkExperience | Education; type: 
           <span>{" - "}</span>
           <span>{endDate || "Present"}</span>
         </time>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-          <h2 className="font-semibold leading-none">{name}</h2>
-          {title && <p className="text-md text-muted-foreground sm:ml-2">{`| ${title}`}</p>}
-        </div>
+				<div className="flex items-center gap-2">
+					<h2 className="font-semibold leading-none">{name}</h2>
+					{title && <p className="text-md text-muted-foreground">{`| ${title}`}</p>}
+				</div>
         {item.description && (
 					<div className="prose pr-8 text-md dark:prose-invert">{item.description}</div>
 				)}
