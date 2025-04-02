@@ -1,11 +1,20 @@
 'use client'
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
 export default function RedirectAfterSignIn() {
-    const portfolioSessionData: Boolean = sessionStorage.getItem("portfolioSessionData") ? true : false
+    const router = useRouter();
 
-    if (portfolioSessionData) {
-        return window.location.href = "/editor"
-    } 
+    useEffect(() => {
+        const portfolioSessionData = sessionStorage.getItem("portfolioSessionData") ? true : false;
 
-    return window.location.href = "/"
+        if (portfolioSessionData) {
+            router.push("/editor");
+        } else {
+            router.push("/");
+        }
+    }, [router]);
+
+    return null;
 }
