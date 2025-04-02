@@ -1,11 +1,12 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import PortfolioPage from '../PortfolioPage'
 
-export default function PortfolioPreviewPage() {
+function PortfolioPreviewContent() {
   const searchParams = useSearchParams()
-  
+
   const UserInfoComponentName = searchParams.get('UserInfoComponent')
   const EducationWorkComponentName = searchParams.get('EducationWorkComponent')
   const ProjectsComponentName = searchParams.get('ProjectsComponent')
@@ -23,20 +24,24 @@ export default function PortfolioPreviewPage() {
   const userTechnologies = JSON.parse(searchParams.get('userTechnologies') || '[]')
 
   return (
-    <>
-      {personalInfo && education && experiences && projects && userTechnologies && (
-        <PortfolioPage
-          UserInfoComponent={UserInfoComponent}
-          EducationWorkComponent={EducationWorkComponent}
-          ProjectsComponent={ProjectsComponent}
-          UserSkillsComponent={UserSkillsComponent}
-          personalInfo={personalInfo}
-          education={education}
-          experiences={experiences}
-          projects={projects}
-          userTechnologies={userTechnologies}
-        />
-      )}
-    </>
-  );
+    <PortfolioPage
+      UserInfoComponent={UserInfoComponent}
+      EducationWorkComponent={EducationWorkComponent}
+      ProjectsComponent={ProjectsComponent}
+      UserSkillsComponent={UserSkillsComponent}
+      personalInfo={personalInfo}
+      education={education}
+      experiences={experiences}
+      projects={projects}
+      userTechnologies={userTechnologies}
+    />
+  )
+}
+
+export default function PortfolioPreviewPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PortfolioPreviewContent />
+    </Suspense>
+  )
 }
