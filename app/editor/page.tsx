@@ -154,15 +154,7 @@ export default function PortfolioEditor() {
   return (
     <div className="flex flex-col h-screen">
       <header className="flex justify-between items-center p-4 border-b">
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button onClick={() => handleSave(selectedComponents)}>
-              <SaveIcon className="w-4 h-4 mr-2" />
-              Save
-            </Button>
-          </DialogTrigger>
-          <AuthModal />
-        </Dialog>
+        <Link className="mr-6 font-bold text-2xl" href={"/"}>Koderra.</Link>
         <div className="flex space-x-2">
           <Link
             href={{
@@ -216,6 +208,15 @@ export default function PortfolioEditor() {
                 </Select>
               </div>
             ))}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button onClick={() => handleSave(selectedComponents)}>
+                  <SaveIcon className="w-auto h-4 mr-2" />
+                  Save changes
+                </Button>
+              </DialogTrigger>
+              <AuthModal />
+            </Dialog>
           </ScrollArea>
         </div>
 

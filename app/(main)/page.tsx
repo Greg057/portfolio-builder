@@ -66,7 +66,7 @@ export default function Home() {
           {features.map((feature, index) => (
             <Card 
               key={index}
-              className="p-6 bg-background/50 backdrop-blur-sm border-primary/10 transition-all duration-300 hover:shadow-lg"
+              className="p-6 bg-background/20 backdrop-blur-sm border-primary/10 transition-all duration-300 hover:shadow-lg"
               onMouseEnter={() => setHoveredFeature(index)}
               onMouseLeave={() => setHoveredFeature(null)}
             >
