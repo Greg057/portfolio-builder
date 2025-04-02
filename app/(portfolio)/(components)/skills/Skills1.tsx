@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge"
 
 export default function Skills1({ userTechnologies }: { userTechnologies: Technology[] }) {
   return (
-    <section id="skills" className="mb-14 bg-gradient-to-b from-background to-secondary/10">
+    <section id="skills" className="mb-14">
       <h2 className="text-2xl font-bold mb-4">Skills</h2>
       <p className="text-base text-muted-foreground mb-3">
         Some of the technologies I've worked with:
