@@ -22,6 +22,8 @@ export const handleSave = async (selectedComponents: any, config: any = null) =>
         return;
       }
 
+      console.log('selectedComponents', selectedComponents)
+
       const componentsData = config || {
         user_info_component: selectedComponents.userInfo.name,
         education_work_component: selectedComponents.educationWork.name,

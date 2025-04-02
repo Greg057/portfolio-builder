@@ -10,7 +10,7 @@ const defaultUrl = process.env.VERCEL_URL
 export const metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Portfolio Builder",
-  description: "The fastest way to create your developer portfolio",
+  description: "The fastest way to create your developer portfolio"
 };
 
 export default function RootLayout({

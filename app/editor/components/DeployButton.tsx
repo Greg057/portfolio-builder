@@ -15,8 +15,9 @@ import { RocketIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { handleSave } from "../utils/helpers";
 
-export default function DeployButton() {
+export default function DeployButton(components: any) {
   const [slug, setSlug] = useState("john-doe");
   const [error, setError] = useState("");
   const [isDeployed, setIsDeployed] = useState(false);
@@ -114,6 +115,7 @@ export default function DeployButton() {
     if (error) {
       setError("Failed to deploy portfolio.");
     } else {
+      handleSave(components.components);
       console.log("Portfolio deployed successfully!");
       window.open(`/portfolio/${slug}`, "_blank");
     }
@@ -121,6 +123,7 @@ export default function DeployButton() {
 
   const handleButtonClick = () => {
     if (isDeployed) {
+      handleSave(components.components);
       window.open(`/portfolio/${existingSlug}`, "_blank");
     }
   };

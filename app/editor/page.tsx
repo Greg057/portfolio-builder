@@ -178,7 +178,7 @@ export default function PortfolioEditor() {
               Preview
             </Button>
           </Link>
-          <DeployButton />
+          <DeployButton components={selectedComponents}/>
         </div>
       </header>
 
