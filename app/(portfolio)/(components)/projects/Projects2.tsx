@@ -1,105 +1,98 @@
-import { Project } from '@/types/supabase-types'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import type { Project } from "@/types/supabase-types"
 import { Badge } from "@/components/ui/badge"
-import { Github, ExternalLinkIcon } from 'lucide-react'
-import BlurFade from '@/components/ui/blur-fade'
-import Link from 'next/link'
-import { cn } from '@/utils/cn'
-import Image from 'next/image'
-
-const BLUR_FADE_DELAY = 0.04;
+import { ExternalLink, Github, ArrowUpRight } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
 
 export default function Projects2({ projects }: { projects: Project[] }) {
-    return (
-			<div className="space-y-12 w-full py-12">
-				<BlurFade delay={BLUR_FADE_DELAY * 11}>
-					<div className="flex flex-col items-center justify-center space-y-4 text-center">
-						<div className="space-y-2">
-							<div className="inline-block rounded-lg bg-foreground text-background px-3 py-1 text-sm">
-								My Projects
-							</div>
-							<h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-								Check out my latest work
-							</h2>
-						</div>
-					</div>
-				</BlurFade>
-				<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 max-w-[800px] mx-auto">
-					{projects.map((project, index) => (
-						<BlurFade
-							key={project.id || index}
-							delay={BLUR_FADE_DELAY * 12 + index * 0.05}
-						>
-							<Card
-								className={
-									"flex flex-col overflow-hidden border hover:shadow-lg transition-all duration-300 ease-out h-full"
-								}
-							>
-								<Link
-									href={project.live_link || "#"}
-									className={cn("block cursor-pointer")}
-								>
-									{project.picUrl && (
-										<Image
-											src={project.picUrl}
-											alt={project.name}
-											width={500}
-											height={300}
-											className="h-40 w-full overflow-hidden object-cover object-top"
-										/>
-									)}
-								</Link>
-								<CardHeader className="px-2">
-									<div className="space-y-1">
-										<CardTitle className="mt-1 text-base">{project.name}</CardTitle>
-										<div className="hidden font-sans text-xs underline print:visible">
-											{project.live_link?.replace("https://", "").replace("www.", "").replace("/", "")}
-										</div>
-										<div className="prose max-w-full text-pretty font-sans text-xs text-muted-foreground dark:prose-invert">
-											{project.description}
-										</div>
-									</div>
-								</CardHeader>
-								<CardContent className="mt-auto flex flex-col px-2">
-									{project.technologyNames && (
-										<div className="mt-2 flex flex-wrap gap-1">
-											{project.technologyNames?.map((tech) => (
-												<Badge
-													className="px-1 py-0 text-[10px]"
-													variant="secondary"
-													key={tech}
-												>
-													{tech}
-												</Badge>
-											))}
-										</div>
-									)}
-								</CardContent>
-								<CardFooter className="px-2 pb-2">
-										<div className="flex flex-row flex-wrap items-start gap-1">
-											{project.github_link && (
-												<Link href={project.github_link} target="_blank">
-													<Badge className="flex gap-2 px-2 py-1 text-[10px]">
-														<Github className="ml-2 h-4 w-4" />
-														GitHub
-													</Badge>
-												</Link>
-											)}
-											{project.live_link && (
-												<Link href={project.live_link} target="_blank">
-													<Badge className="flex gap-2 px-2 py-1 text-[10px]">
-														<ExternalLinkIcon className="ml-2 h-4 w-4" />
-														Website
-													</Badge>
-												</Link>
-											)}
-										</div>
-								</CardFooter>
-							</Card>
-						</BlurFade>
-					))}
-				</div>
-			</div>
-    )
+  return (
+    <section id="projects" className="mb-14">
+      <div className="text-center mb-5">
+        <h2 className="text-2xl font-bold mb-3">Featured Projects</h2>
+        <p className="text-muted-foreground max-w-2xl mx-auto">
+          A collection of projects I've worked on.
+        </p>
+      </div>
+
+      <div className="grid gap-8 grid-cols-2">
+        {projects.map((project, index) => (
+          <div
+            key={project.id || index}
+            className="group relative flex flex-col overflow-hidden rounded-lg border bg-card transition-all hover:shadow-lg"
+          >
+            {project.picUrl ? (
+              <div className="relative h-48 w-full overflow-hidden">
+                <Image
+                  src={project.picUrl || "/placeholder.svg"}
+                  alt={project.name}
+                  fill
+                  style={{ objectFit: "cover" }}
+                  className="transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+            ) : (
+              <div className="h-48 w-full bg-muted flex items-center justify-center">
+                <span className="text-muted-foreground">No image available</span>
+              </div>
+            )}
+
+            <div className="flex flex-col flex-grow p-5">
+              <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">{project.name}</h3>
+
+              <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{project.description}</p>
+
+              {project.technologyNames && project.technologyNames.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-auto mb-4">
+                  {project.technologyNames.map((tech, i) => (
+                    <Badge key={i} variant="secondary" className="text-xs px-2 py-0.5">
+                      {tech}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex gap-3 mt-auto">
+                {project.live_link && (
+                  <Link
+                    href={project.live_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-sm font-medium text-primary hover:underline"
+                  >
+                    <ExternalLink className="h-4 w-4 mr-1" />
+                    Live Site
+                  </Link>
+                )}
+                {project.github_link && (
+                  <Link
+                    href={project.github_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-sm font-medium text-primary hover:underline"
+                  >
+                    <Github className="h-4 w-4 mr-1" />
+                    Code
+                  </Link>
+                )}
+              </div>
+            </div>
+
+            {(project.live_link || project.github_link) && (
+              <Link
+                href={project.live_link || project.github_link || "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="absolute top-4 right-4 bg-background/80 backdrop-blur-sm p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                aria-label={`View ${project.name}`}
+              >
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+  )
 }
+
