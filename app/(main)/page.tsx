@@ -47,10 +47,10 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.2 }}
             className="mb-8"
           >
-            <Card className="bg-primary/5 border-primary/20 p-6 mx-auto max-w-md">
+            <Card className="bg-primary/5 border-primary/20 p-6 mb-16 mx-auto max-w-md">
               <CardContent className="p-0 flex flex-col items-center">
                 <h3 className="text-xl font-medium mb-3">Welcome back!</h3>
                 <p className="text-muted-foreground mb-4">Continue working on your existing portfolio</p>
@@ -93,7 +93,7 @@ export default function Home() {
           <Link href="/onboarding">
             <Button
               size="lg"
-              className="text-lg h-14 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 bg-primary hover:bg-primary/90"
+              className="text-lg h-14 px-8 shadow-lg hover:shadow-xl transition-all duration-300 bg-primary hover:bg-primary/90"
             >
               Create Your Portfolio
               <ArrowRight className="ml-2" />
