@@ -85,7 +85,7 @@ export default function PortfolioEditor() {
           setEducation(sessionData.educations || []);
           setExperiences(sessionData.experiences || []);
           setProjects(sessionData.projects || []);
-          setUserTechnologies(userTechnologyNames || []);
+          setUserTechnologies((userTechnologyNames || []).filter((tech): tech is Technology => tech !== null));
         }
 
         if (user) {
