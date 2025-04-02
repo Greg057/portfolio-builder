@@ -1,14 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from "framer-motion"
 import Link from 'next/link';
-import { ArrowRight, Code2, Palette, Rocket, CheckCircle } from 'lucide-react'
+import { ArrowRight, Code2, Palette, Rocket, CheckCircle, Edit } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { createClient } from '@/utils/supabase/client';
 
 export default function Home() {
   const [hoveredFeature, setHoveredFeature] = useState<number | null>(null)
+  const [isPortfolio, setIsPortfolio] = useState<boolean>(false)
 
   const features = [
     { icon: Code2, title: "Interactive Editor", description: "Real-time updates with a split view of input fields and live portfolio preview" },
@@ -17,9 +19,51 @@ export default function Home() {
     { icon: CheckCircle, title: "Developer Focused", description: "Pre-built components optimized for showcasing technical achievements" },
   ]
 
+  useEffect(() => {
+    const checkUser = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
+        const { data, error } = await supabase
+          .from("portfolio_data")
+          .select()
+          .eq("user_id", user.id)
+          .single();
+
+        if (!error && data) {
+          setIsPortfolio(true);
+        }
+      }
+    }
+
+    checkUser();
+  }, []);
+
   return (
     <div className="container mx-auto px-4 py-16 relative z-10">
       <div className="max-w-5xl mx-auto text-center">
+        {isPortfolio && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-8"
+          >
+            <Card className="bg-primary/5 border-primary/20 p-6 mx-auto max-w-md">
+              <CardContent className="p-0 flex flex-col items-center">
+                <h3 className="text-xl font-medium mb-3">Welcome back!</h3>
+                <p className="text-muted-foreground mb-4">Continue working on your existing portfolio</p>
+                <Link href="/editor">
+                  <Button size="lg" className="gap-2" variant="default">
+                    <Edit className="h-4 w-4" />
+                    Continue Editing
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
