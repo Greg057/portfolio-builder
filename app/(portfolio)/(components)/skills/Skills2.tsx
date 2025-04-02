@@ -1,22 +1,28 @@
-import { Technology } from '@/types/supabase-types'
+import type { Technology } from "@/types/supabase-types"
 import { Badge } from "@/components/ui/badge"
-import BlurFade from '@/components/ui/blur-fade'
-
-const BLUR_FADE_DELAY = 0.04;
 
 export default function Skills2({ userTechnologies }: { userTechnologies: Technology[] }) {
-    return (
-			<div className="flex min-h-0 flex-col gap-y-3">
-				<BlurFade delay={BLUR_FADE_DELAY * 9}>
-					<h2 className="text-xl font-bold">Skills</h2>
-				</BlurFade>
-				<div className="flex flex-wrap gap-1">
-					{userTechnologies.map((tech, id) => (
-						<BlurFade key={tech.id || id} delay={BLUR_FADE_DELAY * 10 + id * 0.05}>
-							<Badge key={tech.id || id}>{tech.name}</Badge>
-						</BlurFade>
-					))}
-				</div>
-			</div>
-    )
+  return (
+    <section id="skills" className="my-20">
+      <div className="text-center mb-3">
+        <h2 className="text-3xl font-bold mb-3">Technical Skills</h2>
+        <p className="text-muted-foreground max-w-2xl mx-auto">
+          Technologies and tools I've worked with throughout my career
+        </p>
+      </div>
+
+      <div className="flex flex-wrap justify-center gap-3">
+        {userTechnologies.map((tech) => (
+          <Badge
+            key={tech.id}
+            variant="outline"
+            className="px-4 py-2 text-sm font-medium border border-border hover:bg-accent transition-colors duration-200"
+          >
+            {tech.name}
+          </Badge>
+        ))}
+      </div>
+    </section>
+  )
 }
+
