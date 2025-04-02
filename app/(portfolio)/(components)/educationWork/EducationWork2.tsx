@@ -1,6 +1,7 @@
 import { WorkExperience, Education } from '@/types/supabase-types';
 import Image from 'next/image';
 import { CalendarIcon } from 'lucide-react';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 
 export default function EducationWork2({ education, experiences }: { education: Education[], experiences: WorkExperience[] }) {
   return (
@@ -15,15 +16,9 @@ export default function EducationWork2({ education, experiences }: { education: 
 								<div className="flex flex-col md:flex-row md:items-center mb-4">
 									<div className="flex items-center mb-2 md:mb-0">
 										{exp.logoUrl && (
-											<div className="relative w-12 h-12 mr-4">
-												<Image
-													src={exp.logoUrl || "/placeholder.svg"}
-													alt={`${exp.company} logo`}
-													fill
-													style={{ objectFit: "contain" }}
-													className="rounded-full bg-background p-1"
-												/>
-											</div>
+											<Avatar className="size-12 mr-3 flex items-center justify-center rounded-none">
+												<AvatarImage src={exp.logoUrl || ""} alt={`${exp.company} logo`} className="bg-background object-cover" />
+											</Avatar>
 										)}
 										<h3 className="text-xl font-semibold">{exp.company}</h3>
 									</div>
@@ -51,15 +46,9 @@ export default function EducationWork2({ education, experiences }: { education: 
 								<div className="flex flex-col md:flex-row md:items-center mb-4">
 									<div className="flex items-center mb-2 md:mb-0">
 										{edu.logoUrl && (
-											<div className="relative w-12 h-12 mr-4">
-												<Image
-													src={edu.logoUrl || "/placeholder.svg"}
-													alt={`${edu.university} logo`}
-													fill
-													style={{ objectFit: "contain" }}
-													className="rounded-full bg-background p-1"
-												/>
-											</div>
+											<Avatar className="size-12 mr-3 flex items-center justify-center rounded-none">
+												<AvatarImage src={edu.logoUrl || ""} alt={`${edu.university} logo`} className="bg-background object-contain" />
+											</Avatar>
 										)}
 										<h3 className="text-xl font-semibold">{edu.university}</h3>
 									</div>

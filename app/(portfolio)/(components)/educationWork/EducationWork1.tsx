@@ -1,6 +1,7 @@
 import { WorkExperience, Education } from '@/types/supabase-types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from 'next/image';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 
 export default function EducationWork1({ education, experiences }: { education: Education[], experiences: WorkExperience[] }) {
   return (
@@ -12,13 +13,9 @@ export default function EducationWork1({ education, experiences }: { education: 
 						<Card key={exp.id || index} className="bg-card overflow-hidden">
 							<CardHeader className="flex flex-row items-center space-x-4 py-4">
 								{exp.logoUrl && (
-									<Image
-										src={exp.logoUrl}
-										alt={`${exp.company} logo`}
-										width={50}
-										height={50}
-										className="rounded-full"
-									/>
+									<Avatar className="size-12 flex items-center justify-center rounded-none">
+										<AvatarImage src={exp.logoUrl || ""} alt={`${exp.company} logo`} className="bg-background object-cover" />
+									</Avatar>
 								)}
 								<div>
 									<CardTitle className="text-xl">{exp.company}</CardTitle>
@@ -41,13 +38,9 @@ export default function EducationWork1({ education, experiences }: { education: 
 						<Card key={edu.id || index} className="bg-card">
 							<CardHeader className="flex flex-row items-center space-x-4 py-4">
 								{edu.logoUrl && (
-									<Image
-										src={edu.logoUrl}
-										alt={`${edu.university} logo`}
-										width={50}
-										height={50}
-										className="rounded-full"
-									/>
+									<Avatar className="size-12 flex items-center justify-center rounded-none">
+										<AvatarImage src={edu.logoUrl || ""} alt={`${edu.university} logo`} className="bg-background object-contain" />
+									</Avatar>
 								)}
 								<div>
 									<CardTitle className="text-xl">{edu.university}</CardTitle>
