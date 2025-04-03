@@ -6,10 +6,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { EyeIcon, SaveIcon } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
-import UserInfo1 from '../(portfolio)/(components)/userInfo/UserInfo1'
-import UserInfo2 from '../(portfolio)/(components)/userInfo/UserInfo2'
-import Projects1 from '../(portfolio)/(components)/projects/Projects1'
-import Skills1 from '../(portfolio)/(components)/skills/Skills1'
 import Link from 'next/link'
 import { Education, Project, UserInfo, Technology, WorkExperience } from '@/types/supabase-types'
 import PortfolioPage from '../(portfolio)/PortfolioPage'
@@ -19,28 +15,51 @@ import {
 } from "@/components/ui/dialog"
 import AuthModal from './components/AuthModal'
 import DeployButton from './components/DeployButton'
-import UserInfo3 from '../(portfolio)/(components)/userInfo/UserInfo3'
-import Projects2 from '../(portfolio)/(components)/projects/Projects2'
-import Skills2 from '../(portfolio)/(components)/skills/Skills2'
 import { fetchConfig, getUserTechNames, handleSave } from './utils/helpers'
 import { fetchUserData } from './utils/userData'
+import UserInfo1 from '../(portfolio)/(components)/userInfo/UserInfo1'
+import UserInfo2 from '../(portfolio)/(components)/userInfo/UserInfo2'
+import Projects1 from '../(portfolio)/(components)/projects/Projects1'
+import Skills1 from '../(portfolio)/(components)/skills/Skills1'
 import EducationWork1 from '../(portfolio)/(components)/educationWork/EducationWork1'
 import EducationWork2 from '../(portfolio)/(components)/educationWork/EducationWork2'
 import EducationWork3 from '../(portfolio)/(components)/educationWork/EducationWork3'
 import UserInfo4 from '../(portfolio)/(components)/userInfo/UserInfo4'
 import EducationWork4 from '../(portfolio)/(components)/educationWork/EducationWork4'
+import UserInfo3 from '../(portfolio)/(components)/userInfo/UserInfo3'
+import Projects2 from '../(portfolio)/(components)/projects/Projects2'
+import Skills2 from '../(portfolio)/(components)/skills/Skills2'
 
-const userInfoComponents = [UserInfo1, UserInfo2, UserInfo3, UserInfo4]
-const educationWorkComponents = [EducationWork1, EducationWork2, EducationWork3, EducationWork4]
-const projectsComponents = [Projects1, Projects2]
-const userSkillsComponents = [Skills1, Skills2]
+const userInfoComponents = {
+  UserInfo1: { component: UserInfo1, name: "User Info 1" },
+  UserInfo2: { component: UserInfo2, name: "User Info 2" },
+  UserInfo3: { component: UserInfo3, name: "User Info 3" },
+  UserInfo4: { component: UserInfo4, name: "User Info 4" }
+}
+
+const educationWorkComponents = {
+  EducationWork1: { component: EducationWork1, name: "Education Work 1" },
+  EducationWork2: { component: EducationWork2, name: "Education Work 2" },
+  EducationWork3: { component: EducationWork3, name: "Education Work 3" },
+  EducationWork4: { component: EducationWork4, name: "Education Work 4" }
+}
+
+const projectsComponents = {
+  Projects1: { component: Projects1, name: "Projects 1" },
+  Projects2: { component: Projects2, name: "Projects 2" }
+}
+
+const userSkillsComponents = {
+  Skills1: { component: Skills1, name: "Skills 1" },
+  Skills2: { component: Skills2, name: "Skills 2" }
+}
 
 const sections = [
-  { name: 'User Info', key: 'userInfo', components: userInfoComponents },
-  { name: 'Education Work', key: 'educationWork', components: educationWorkComponents },
-  { name: 'User Skills', key: 'userSkills', components: userSkillsComponents },
-  { name: 'Projects', key: 'projects', components: projectsComponents },
-]
+  { name: "User Info", key: "userInfo", components: userInfoComponents },
+  { name: "Education Work", key: "educationWork", components: educationWorkComponents },
+  { name: "User Skills", key: "userSkills", components: userSkillsComponents },
+  { name: "Projects", key: "projects", components: projectsComponents }
+];
 
 export default function PortfolioEditor() {
   const [personalInfo, setPersonalInfo] = useState<UserInfo>();
@@ -49,17 +68,30 @@ export default function PortfolioEditor() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [userTechnologies, setUserTechnologies] = useState<Technology[]>([]);
   const [selectedComponents, setSelectedComponents] = useState({
-    userInfo: UserInfo1,
-    educationWork: EducationWork1,
-    projects: Projects1,
-    userSkills: Skills1,
-  })
-
+    userInfo: userInfoComponents.UserInfo1, 
+    educationWork: educationWorkComponents.EducationWork1,
+    projects: projectsComponents.Projects1,
+    userSkills: userSkillsComponents.Skills1,
+  });
+  
   const handleComponentChange = (section: string, componentName: string) => {
-    const componentList = sections.find(s => s.key === section)?.components || []
-    const selectedComponent = componentList.find(c => c.name === componentName) || componentList[0]
-    setSelectedComponents(prev => ({ ...prev, [section]: selectedComponent }))
-  }
+    const sectionObject = sections.find(s => s.key === section);
+    if (!sectionObject) return;
+  
+    const selectedComponentKey = Object.keys(sectionObject.components).find(
+      (key) => (sectionObject.components[key as keyof typeof sectionObject.components] as { name: string }).name === componentName
+    );
+  
+    if (selectedComponentKey) {
+      const selectedComponent = sectionObject.components[selectedComponentKey as keyof typeof sectionObject.components];
+      console.log("selectedComponent", selectedComponent);
+      setSelectedComponents(prev => ({
+        ...prev,
+        [section]: selectedComponent
+      }));
+    }
+  };
+  
 
   useEffect(() => {
   
@@ -128,11 +160,11 @@ export default function PortfolioEditor() {
         } = await fetchUserData(userId);
 
         setSelectedComponents({
-          userInfo: require(`@/app/(portfolio)/(components)/userInfo/${userComponents.user_info_component}`).default,
-          educationWork: require(`@/app/(portfolio)/(components)/educationWork/${userComponents.education_work_component}`).default,
-          projects: require(`@/app/(portfolio)/(components)/projects/${userComponents.projects_component}`).default,
-          userSkills: require(`@/app/(portfolio)/(components)/skills/${userComponents.skills_component}`).default,
-        })
+          userInfo: userInfoComponents[userComponents.user_info_component as keyof typeof userInfoComponents] || userInfoComponents.UserInfo1,
+          educationWork: educationWorkComponents[userComponents.education_work_component as keyof typeof educationWorkComponents] || educationWorkComponents.EducationWork1,
+          projects: projectsComponents[userComponents.projects_component as keyof typeof projectsComponents] || projectsComponents.Projects1,
+          userSkills: userSkillsComponents[userComponents.skills_component as keyof typeof userSkillsComponents] || userSkillsComponents.Skills1,
+        });
 
         setPersonalInfo(userInfo);
         setEducation(educations);
@@ -143,7 +175,7 @@ export default function PortfolioEditor() {
     }
 
     const fetchAndSaveAll = async () => {
-      await fetchConfig(selectedComponents, setSelectedComponents);
+      await fetchConfig(selectedComponents, setSelectedComponents, userInfoComponents, educationWorkComponents, projectsComponents, userSkillsComponents);
       await fetchData()
     }
     
@@ -192,16 +224,16 @@ export default function PortfolioEditor() {
                   {section.name} UI Component
                 </label>
                 <Select
-                  value={selectedComponents[section.key as keyof typeof selectedComponents].name}
+                  value={selectedComponents[section.key as keyof typeof selectedComponents]?.name || ""}
                   onValueChange={(value) => handleComponentChange(section.key, value)}
                 >
                   <SelectTrigger id={section.key}>
-                    <SelectValue />
+                    <SelectValue placeholder="Select a component" />
                   </SelectTrigger>
                   <SelectContent>
-                    {section.components.map((Component, index) => (
-                      <SelectItem key={index} value={Component.name}>
-                        {Component.name}
+                    {Object.values(section.components).map((component, index) => (
+                      <SelectItem key={index} value={component.name}>
+                        {component.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -223,10 +255,10 @@ export default function PortfolioEditor() {
         <ScrollArea className="h-[100%] w-[100%]">
           {personalInfo && education && experiences && projects && userTechnologies && (
             <PortfolioPage
-              UserInfoComponent={selectedComponents.userInfo}
-              EducationWorkComponent={selectedComponents.educationWork}
-              ProjectsComponent={selectedComponents.projects}
-              UserSkillsComponent={selectedComponents.userSkills}
+              UserInfoComponent={selectedComponents.userInfo.component}
+              EducationWorkComponent={selectedComponents.educationWork.component}
+              ProjectsComponent={selectedComponents.projects.component}
+              UserSkillsComponent={selectedComponents.userSkills.component}
               personalInfo={personalInfo}
               education={education}
               experiences={experiences}

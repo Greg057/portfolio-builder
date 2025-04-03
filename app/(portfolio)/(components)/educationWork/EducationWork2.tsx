@@ -1,5 +1,4 @@
 import { WorkExperience, Education } from '@/types/supabase-types';
-import Image from 'next/image';
 import { CalendarIcon } from 'lucide-react';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 

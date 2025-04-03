@@ -13,10 +13,10 @@ export const handleSave = async (selectedComponents: any, config: any = null) =>
         sessionStorage.setItem(
           "portfolioSessionData",
           JSON.stringify({
-            user_info_component: selectedComponents.userInfo.name,
-            education_work_component: selectedComponents.educationWork.name,
-            projects_component: selectedComponents.projects.name,
-            skills_component: selectedComponents.userSkills.name,
+            user_info_component: selectedComponents.userInfo.component.name,
+            education_work_component: selectedComponents.educationWork.component.name,
+            projects_component: selectedComponents.projects.component.name,
+            skills_component: selectedComponents.userSkills.component.name,
           })
         );
         return;
@@ -25,10 +25,10 @@ export const handleSave = async (selectedComponents: any, config: any = null) =>
       console.log('selectedComponents', selectedComponents)
 
       const componentsData = config || {
-        user_info_component: selectedComponents.userInfo.name,
-        education_work_component: selectedComponents.educationWork.name,
-        projects_component: selectedComponents.projects.name,
-        skills_component: selectedComponents.userSkills.name
+        user_info_component: selectedComponents.userInfo.component.name,
+        education_work_component: selectedComponents.educationWork.component.name,
+        projects_component: selectedComponents.projects.component.name,
+        skills_component: selectedComponents.userSkills.component.name
       };
       const payload = { ...componentsData , user_id: user.id, is_saved: true }
 
@@ -47,7 +47,7 @@ export const handleSave = async (selectedComponents: any, config: any = null) =>
     }
 }
 
-export const fetchConfig = async (selectedComponents: any, setSelectedComponents: any) => {
+export const fetchConfig = async (selectedComponents: any, setSelectedComponents: any, userInfoComponents: any, educationWorkComponents: any, projectsComponents: any, userSkillsComponents: any) => {
 	const portfolioSessionData = sessionStorage.getItem("portfolioSessionData");
 
 	if (portfolioSessionData) {
@@ -59,6 +59,13 @@ export const fetchConfig = async (selectedComponents: any, setSelectedComponents
 			projects: require(`@/app/(portfolio)/(components)/projects/${parsedConfig.projects_component}`).default,
 			userSkills: require(`@/app/(portfolio)/(components)/skills/${parsedConfig.skills_component}`).default,
 		});
+
+    setSelectedComponents({
+      userInfo: userInfoComponents[parsedConfig.user_info_component as keyof typeof userInfoComponents] || userInfoComponents.UserInfo1,
+      educationWork: educationWorkComponents[parsedConfig.education_work_component as keyof typeof educationWorkComponents] || educationWorkComponents.EducationWork1,
+      projects: projectsComponents[parsedConfig.projects_component as keyof typeof projectsComponents] || projectsComponents.Projects1,
+      userSkills: userSkillsComponents[parsedConfig.skills_component as keyof typeof userSkillsComponents] || userSkillsComponents.Skills1,
+    });
 
 		sessionStorage.removeItem("portfolioSessionData");
 

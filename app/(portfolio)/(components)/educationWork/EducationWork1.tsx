@@ -1,6 +1,5 @@
 import { WorkExperience, Education } from '@/types/supabase-types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from 'next/image';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 
 export default function EducationWork1({ education, experiences }: { education: Education[], experiences: WorkExperience[] }) {
