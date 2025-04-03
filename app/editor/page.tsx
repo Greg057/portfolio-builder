@@ -192,10 +192,10 @@ export default function PortfolioEditor() {
             href={{
               pathname: "/portfolio-preview",
               query: {
-                UserInfoComponent: selectedComponents.userInfo.name, 
-                EducationWorkComponent: selectedComponents.educationWork.name, 
-                ProjectsComponent: selectedComponents.projects.name,
-                UserSkillsComponent: selectedComponents.userSkills.name,
+                UserInfoComponent: selectedComponents.userInfo.key, 
+                EducationWorkComponent: selectedComponents.educationWork.key, 
+                ProjectsComponent: selectedComponents.projects.key,
+                UserSkillsComponent: selectedComponents.userSkills.key,
                 personalInfo: JSON.stringify(personalInfo),
                 education: JSON.stringify(education),
                 experiences: JSON.stringify(experiences),
