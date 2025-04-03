@@ -31,27 +31,27 @@ import Projects2 from '../(portfolio)/(components)/projects/Projects2'
 import Skills2 from '../(portfolio)/(components)/skills/Skills2'
 
 const userInfoComponents = {
-  UserInfo1: { component: UserInfo1, name: "User Info 1" },
-  UserInfo2: { component: UserInfo2, name: "User Info 2" },
-  UserInfo3: { component: UserInfo3, name: "User Info 3" },
-  UserInfo4: { component: UserInfo4, name: "User Info 4" }
+  UserInfo1: { component: UserInfo1, name: "User Info 1", key: "UserInfo1" },
+  UserInfo2: { component: UserInfo2, name: "User Info 2", key: "UserInfo2" },
+  UserInfo3: { component: UserInfo3, name: "User Info 3", key: "UserInfo3" },
+  UserInfo4: { component: UserInfo4, name: "User Info 4", key: "UserInfo4" }
 }
 
 const educationWorkComponents = {
-  EducationWork1: { component: EducationWork1, name: "Education Work 1" },
-  EducationWork2: { component: EducationWork2, name: "Education Work 2" },
-  EducationWork3: { component: EducationWork3, name: "Education Work 3" },
-  EducationWork4: { component: EducationWork4, name: "Education Work 4" }
+  EducationWork1: { component: EducationWork1, name: "Education Work 1", key: "EducationWork1" },
+  EducationWork2: { component: EducationWork2, name: "Education Work 2", key: "EducationWork2" },
+  EducationWork3: { component: EducationWork3, name: "Education Work 3", key: "EducationWork3" },
+  EducationWork4: { component: EducationWork4, name: "Education Work 4", key: "EducationWork4" }
 }
 
 const projectsComponents = {
-  Projects1: { component: Projects1, name: "Projects 1" },
-  Projects2: { component: Projects2, name: "Projects 2" }
+  Projects1: { component: Projects1, name: "Projects 1", key: "Projects1" },
+  Projects2: { component: Projects2, name: "Projects 2", key: "Projects2" }
 }
 
 const userSkillsComponents = {
-  Skills1: { component: Skills1, name: "Skills 1" },
-  Skills2: { component: Skills2, name: "Skills 2" }
+  Skills1: { component: Skills1, name: "Skills 1", key: "Skills1" },
+  Skills2: { component: Skills2, name: "Skills 2", key: "Skills2" }
 }
 
 const sections = [

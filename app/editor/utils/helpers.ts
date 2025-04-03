@@ -13,10 +13,10 @@ export const handleSave = async (selectedComponents: any, config: any = null) =>
         sessionStorage.setItem(
           "portfolioSessionData",
           JSON.stringify({
-            user_info_component: selectedComponents.userInfo.component.name,
-            education_work_component: selectedComponents.educationWork.component.name,
-            projects_component: selectedComponents.projects.component.name,
-            skills_component: selectedComponents.userSkills.component.name,
+            user_info_component: selectedComponents.userInfo.key,
+            education_work_component: selectedComponents.educationWork.key,
+            projects_component: selectedComponents.projects.key,
+            skills_component: selectedComponents.userSkills.key,
           })
         );
         return;
@@ -25,10 +25,10 @@ export const handleSave = async (selectedComponents: any, config: any = null) =>
       console.log('selectedComponents', selectedComponents)
 
       const componentsData = config || {
-        user_info_component: selectedComponents.userInfo.component.name,
-        education_work_component: selectedComponents.educationWork.component.name,
-        projects_component: selectedComponents.projects.component.name,
-        skills_component: selectedComponents.userSkills.component.name
+        user_info_component: selectedComponents.userInfo.key,
+        education_work_component: selectedComponents.educationWork.key,
+        projects_component: selectedComponents.projects.key,
+        skills_component: selectedComponents.userSkills.key
       };
       const payload = { ...componentsData , user_id: user.id, is_saved: true }
 
