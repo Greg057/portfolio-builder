@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from "framer-motion"
 import Link from 'next/link';
-import { ArrowRight, Code2, Palette, Rocket, CheckCircle, Edit } from 'lucide-react'
+import { ArrowRight, Code2, Rocket, CheckCircle, Edit, Component } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { createClient } from '@/utils/supabase/client';
@@ -13,10 +13,10 @@ export default function Home() {
   const [isPortfolio, setIsPortfolio] = useState<boolean>(false)
 
   const features = [
-    { icon: Code2, title: "Interactive Editor", description: "Real-time updates with a split view of input fields and live portfolio preview" },
-    { icon: Palette, title: "Customizable UI", description: "Select from various UI styles for each section to create your unique portfolio" },
-    { icon: Rocket, title: "One-Click Deploy", description: "Deploy your portfolio with a single click and get a unique URL instantly" },
-    { icon: CheckCircle, title: "Developer Focused", description: "Pre-built components optimized for showcasing technical achievements" },
+    { icon: Component, title: "Customizable UI", description: "Select from various UI components for each section to create your unique portfolio" },
+    { icon: Code2, title: "Interactive Editor", description: "Real-time updates with a split view of UI components and live portfolio preview" },
+    { icon: Rocket, title: "One-Click Deploy", description: "Deploy your portfolio with a single click and share it to the world instantly" },
+    { icon: CheckCircle, title: "Developer Focused", description: "Pre-built mobile optimized components for showcasing technical achievements" },
   ]
 
   useEffect(() => {

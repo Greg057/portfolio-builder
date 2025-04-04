@@ -14,52 +14,10 @@ import AuthModal from "./components/AuthModal"
 import DeployButton from "./components/DeployButton"
 import { fetchConfig, getUserTechNames, handleSave } from "./utils/helpers"
 import { fetchUserData } from "./utils/userData"
-import UserInfo1 from "../(portfolio)/(components)/userInfo/UserInfo1"
-import UserInfo2 from "../(portfolio)/(components)/userInfo/UserInfo2"
-import Projects1 from "../(portfolio)/(components)/projects/Projects1"
-import Skills1 from "../(portfolio)/(components)/skills/Skills1"
-import EducationWork1 from "../(portfolio)/(components)/educationWork/EducationWork1"
-import EducationWork2 from "../(portfolio)/(components)/educationWork/EducationWork2"
-import EducationWork3 from "../(portfolio)/(components)/educationWork/EducationWork3"
-import UserInfo4 from "../(portfolio)/(components)/userInfo/UserInfo4"
-import EducationWork4 from "../(portfolio)/(components)/educationWork/EducationWork4"
-import UserInfo3 from "../(portfolio)/(components)/userInfo/UserInfo3"
-import Projects2 from "../(portfolio)/(components)/projects/Projects2"
-import Skills2 from "../(portfolio)/(components)/skills/Skills2"
 import Spinner from "@/components/spinner"
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
-import { Menu, X } from "lucide-react"
-
-const userInfoComponents = {
-  UserInfo1: { component: UserInfo1, name: "User Info 1", key: "UserInfo1" },
-  UserInfo2: { component: UserInfo2, name: "User Info 2", key: "UserInfo2" },
-  UserInfo3: { component: UserInfo3, name: "User Info 3", key: "UserInfo3" },
-  UserInfo4: { component: UserInfo4, name: "User Info 4", key: "UserInfo4" },
-}
-
-const educationWorkComponents = {
-  EducationWork1: { component: EducationWork1, name: "Education Work 1", key: "EducationWork1" },
-  EducationWork2: { component: EducationWork2, name: "Education Work 2", key: "EducationWork2" },
-  EducationWork3: { component: EducationWork3, name: "Education Work 3", key: "EducationWork3" },
-  EducationWork4: { component: EducationWork4, name: "Education Work 4", key: "EducationWork4" },
-}
-
-const projectsComponents = {
-  Projects1: { component: Projects1, name: "Projects 1", key: "Projects1" },
-  Projects2: { component: Projects2, name: "Projects 2", key: "Projects2" },
-}
-
-const userSkillsComponents = {
-  Skills1: { component: Skills1, name: "Skills 1", key: "Skills1" },
-  Skills2: { component: Skills2, name: "Skills 2", key: "Skills2" },
-}
-
-const sections = [
-  { name: "User Info", key: "userInfo", components: userInfoComponents },
-  { name: "Education Work", key: "educationWork", components: educationWorkComponents },
-  { name: "User Skills", key: "userSkills", components: userSkillsComponents },
-  { name: "Projects", key: "projects", components: projectsComponents },
-]
+import { Menu } from "lucide-react"
+import { educationWorkComponents, projectsComponents, sections, userInfoComponents, userSkillsComponents } from "./utils/componentsData"
 
 export default function PortfolioEditor() {
   const [personalInfo, setPersonalInfo] = useState<UserInfo>()

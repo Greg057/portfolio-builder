@@ -4,11 +4,9 @@ import { notFound } from "next/navigation";
 import PortfolioPage from "@/app/(portfolio)/PortfolioPage";
 import { useEffect, useState } from "react";
 import { Education, Project, UserInfo, Technology, WorkExperience } from '@/types/supabase-types'
-import UserInfo1 from '@/app/(portfolio)/(components)/userInfo/UserInfo1'
-import EducationWork1 from '@/app/(portfolio)/(components)/educationWork/EducationWork1'
-import Projects1 from '@/app/(portfolio)/(components)/projects/Projects1'
-import Skills1 from '@/app/(portfolio)/(components)/skills/Skills1'
 import { fetchUserData } from "@/app/editor/utils/userData";
+import { educationWorkComponents, projectsComponents, sections, userInfoComponents, userSkillsComponents } from "@/app/editor/utils/componentsData";
+import Spinner from "@/components/spinner";
 
 export default function PortfolioDisplay({ userId }: { userId: string }) {
     const [personalInfo, setPersonalInfo] = useState<UserInfo>();
@@ -17,10 +15,10 @@ export default function PortfolioDisplay({ userId }: { userId: string }) {
     const [projects, setProjects] = useState<Project[]>([]);
     const [userTechnologies, setUserTechnologies] = useState<Technology[]>([]);
     const [selectedComponents, setSelectedComponents] = useState({
-      userInfo: UserInfo1,
-      educationWork: EducationWork1,
-      projects: Projects1,
-      userSkills: Skills1,
+      userInfo: userInfoComponents.UserInfo1,
+      educationWork: educationWorkComponents.EducationWork1,
+      projects: projectsComponents.Projects1,
+      userSkills: userSkillsComponents.Skills1,
     })
   
     useEffect(() => {
@@ -36,10 +34,18 @@ export default function PortfolioDisplay({ userId }: { userId: string }) {
         } = await fetchUserData(userId);
 
         setSelectedComponents({
-          userInfo: require(`@/app/(portfolio)/(components)/userInfo/${userComponents.user_info_component}`).default,
-          educationWork: require(`@/app/(portfolio)/(components)/educationWork/${userComponents.education_work_component}`).default,
-          projects: require(`@/app/(portfolio)/(components)/projects/${userComponents.projects_component}`).default,
-          userSkills: require(`@/app/(portfolio)/(components)/skills/${userComponents.skills_component}`).default,
+          userInfo:
+            userInfoComponents[userComponents.user_info_component as keyof typeof userInfoComponents] ||
+            userInfoComponents.UserInfo1,
+          educationWork:
+            educationWorkComponents[userComponents.education_work_component as keyof typeof educationWorkComponents] ||
+            educationWorkComponents.EducationWork1,
+          projects:
+            projectsComponents[userComponents.projects_component as keyof typeof projectsComponents] ||
+            projectsComponents.Projects1,
+          userSkills:
+            userSkillsComponents[userComponents.skills_component as keyof typeof userSkillsComponents] ||
+            userSkillsComponents.Skills1,
         })
 
         setPersonalInfo(userInfo);
@@ -60,18 +66,20 @@ export default function PortfolioDisplay({ userId }: { userId: string }) {
   
     return (
       <>
-        {personalInfo && education && experiences && projects && userTechnologies && (
+        {personalInfo ? (
           <PortfolioPage
-            UserInfoComponent={selectedComponents.userInfo}
-            EducationWorkComponent={selectedComponents.educationWork}
-            ProjectsComponent={selectedComponents.projects}
-            UserSkillsComponent={selectedComponents.userSkills}
+            UserInfoComponent={selectedComponents.userInfo.component}
+            EducationWorkComponent={selectedComponents.educationWork.component}
+            ProjectsComponent={selectedComponents.projects.component}
+            UserSkillsComponent={selectedComponents.userSkills.component}
             personalInfo={personalInfo}
             education={education}
             experiences={experiences}
             projects={projects}
             userTechnologies={userTechnologies}
           />
+        ) : (
+          <Spinner />
         )}
       </>
     );
