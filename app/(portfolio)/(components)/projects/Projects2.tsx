@@ -9,19 +9,17 @@ export default function Projects2({ projects }: { projects: Project[] }) {
     <section id="projects" className="mb-14">
       <div className="text-center mb-5">
         <h2 className="text-2xl font-bold mb-3">Featured Projects</h2>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          A collection of projects I've worked on.
-        </p>
+        <p className="text-muted-foreground max-w-2xl mx-auto">A collection of projects I've worked on.</p>
       </div>
 
-      <div className="grid gap-8 grid-cols-2">
+      <div className="grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-2">
         {projects.map((project, index) => (
           <div
             key={project.id || index}
             className="group relative flex flex-col overflow-hidden rounded-lg border bg-card transition-all hover:shadow-lg"
           >
             {project.picUrl ? (
-              <div className="relative h-48 w-full overflow-hidden">
+              <div className="relative h-40 sm:h-48 w-full overflow-hidden">
                 <Image
                   src={project.picUrl || "/placeholder.svg"}
                   alt={project.name}
@@ -32,13 +30,15 @@ export default function Projects2({ projects }: { projects: Project[] }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
             ) : (
-              <div className="h-48 w-full bg-muted flex items-center justify-center">
+              <div className="h-40 sm:h-48 w-full bg-muted flex items-center justify-center">
                 <span className="text-muted-foreground">No image available</span>
               </div>
             )}
 
-            <div className="flex flex-col flex-grow p-5">
-              <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">{project.name}</h3>
+            <div className="flex flex-col flex-grow p-4 sm:p-5">
+              <h3 className="text-lg sm:text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
+                {project.name}
+              </h3>
 
               <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{project.description}</p>
 
@@ -52,7 +52,7 @@ export default function Projects2({ projects }: { projects: Project[] }) {
                 </div>
               )}
 
-              <div className="flex gap-3 mt-auto">
+              <div className="flex flex-wrap gap-3 mt-auto">
                 {project.live_link && (
                   <Link
                     href={project.live_link}
