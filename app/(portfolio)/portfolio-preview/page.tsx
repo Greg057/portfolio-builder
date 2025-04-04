@@ -1,10 +1,9 @@
 'use client'
 
-import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import PortfolioPage from '../PortfolioPage'
 
-function PortfolioPreviewContent() {
+export default function PortfolioPreview() {
   const searchParams = useSearchParams()
 
   const UserInfoComponentName = searchParams.get('UserInfoComponent')
@@ -38,10 +37,3 @@ function PortfolioPreviewContent() {
   )
 }
 
-export default function PortfolioPreviewPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <PortfolioPreviewContent />
-    </Suspense>
-  )
-}

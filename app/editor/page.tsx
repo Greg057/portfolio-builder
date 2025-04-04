@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -29,6 +29,7 @@ import EducationWork4 from '../(portfolio)/(components)/educationWork/EducationW
 import UserInfo3 from '../(portfolio)/(components)/userInfo/UserInfo3'
 import Projects2 from '../(portfolio)/(components)/projects/Projects2'
 import Skills2 from '../(portfolio)/(components)/skills/Skills2'
+import Spinner from '@/components/spinner'
 
 const userInfoComponents = {
   UserInfo1: { component: UserInfo1, name: "User Info 1", key: "UserInfo1" },
@@ -184,90 +185,94 @@ export default function PortfolioEditor() {
   
 
   return (
-    <div className="flex flex-col h-screen">
-      <header className="flex justify-between items-center p-4 border-b">
-        <Link className="mr-6 font-bold text-2xl" href={"/"}>Koderra.</Link>
-        <div className="flex space-x-2">
-          <Link
-            href={{
-              pathname: "/portfolio-preview",
-              query: {
-                UserInfoComponent: selectedComponents.userInfo.key, 
-                EducationWorkComponent: selectedComponents.educationWork.key, 
-                ProjectsComponent: selectedComponents.projects.key,
-                UserSkillsComponent: selectedComponents.userSkills.key,
-                personalInfo: JSON.stringify(personalInfo),
-                education: JSON.stringify(education),
-                experiences: JSON.stringify(experiences),
-                projects: JSON.stringify(projects),
-                userTechnologies: JSON.stringify(userTechnologies),
-              }
-            }}
-            target="_blank"
-          >
-            <Button variant="outline">
-              <EyeIcon className="w-4 h-4 mr-2" />
-              Preview
-            </Button>
-          </Link>
-          <DeployButton components={selectedComponents}/>
-        </div>
-      </header>
+    personalInfo === undefined ? (
+      <Spinner />
+    ) : (
+      <div className="flex flex-col h-screen">
+        <header className="flex justify-between items-center p-4 border-b">
+          <Link className="mr-6 font-bold text-2xl" href={"/"}>Koderra.</Link>
+          <div className="flex space-x-2">
+            <Link
+              href={{
+                pathname: "/portfolio-preview",
+                query: {
+                  UserInfoComponent: selectedComponents.userInfo.key, 
+                  EducationWorkComponent: selectedComponents.educationWork.key, 
+                  ProjectsComponent: selectedComponents.projects.key,
+                  UserSkillsComponent: selectedComponents.userSkills.key,
+                  personalInfo: JSON.stringify(personalInfo),
+                  education: JSON.stringify(education),
+                  experiences: JSON.stringify(experiences),
+                  projects: JSON.stringify(projects),
+                  userTechnologies: JSON.stringify(userTechnologies),
+                }
+              }}
+              target="_blank"
+            >
+              <Button variant="outline">
+                <EyeIcon className="w-4 h-4 mr-2" />
+                Preview
+              </Button>
+            </Link>
+            <DeployButton components={selectedComponents}/>
+          </div>
+        </header>
 
-      <main className="flex flex-1 overflow-hidden">
-        <div className="w-1/3 p-4 border-r">
-          <h2 className="text-lg font-semibold mb-4">Customize Sections</h2>
-          <ScrollArea className="h-[calc(100vh-8rem)]">
-            {sections.map(section => (
-              <div key={section.key} className="mb-4">
-                <label htmlFor={section.key} className="block text-sm font-medium text-gray-700 mb-1">
-                  {section.name} UI Component
-                </label>
-                <Select
-                  value={selectedComponents[section.key as keyof typeof selectedComponents]?.name || ""}
-                  onValueChange={(value) => handleComponentChange(section.key, value)}
-                >
-                  <SelectTrigger id={section.key}>
-                    <SelectValue placeholder="Select a component" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.values(section.components).map((component, index) => (
-                      <SelectItem key={index} value={component.name}>
-                        {component.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            ))}
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button onClick={() => handleSave(selectedComponents)}>
-                  <SaveIcon className="w-auto h-4 mr-2" />
-                  Save changes
-                </Button>
-              </DialogTrigger>
-              <AuthModal />
-            </Dialog>
+        <main className="flex flex-1 overflow-hidden">
+          <div className="w-1/3 p-4 border-r">
+            <h2 className="text-lg font-semibold mb-4">Customize Sections</h2>
+            <ScrollArea className="h-[calc(100vh-8rem)]">
+              {sections.map(section => (
+                <div key={section.key} className="mb-4">
+                  <label htmlFor={section.key} className="block text-sm font-medium text-gray-700 mb-1">
+                    {section.name} UI Component
+                  </label>
+                  <Select
+                    value={selectedComponents[section.key as keyof typeof selectedComponents]?.name || ""}
+                    onValueChange={(value) => handleComponentChange(section.key, value)}
+                  >
+                    <SelectTrigger id={section.key}>
+                      <SelectValue placeholder="Select a component" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(section.components).map((component, index) => (
+                        <SelectItem key={index} value={component.name}>
+                          {component.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              ))}
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button onClick={() => handleSave(selectedComponents)}>
+                    <SaveIcon className="w-auto h-4 mr-2" />
+                    Save changes
+                  </Button>
+                </DialogTrigger>
+                <AuthModal />
+              </Dialog>
+            </ScrollArea>
+          </div>
+
+          <ScrollArea className="h-full w-full">
+            {personalInfo && (
+              <PortfolioPage
+                UserInfoComponent={selectedComponents.userInfo.component}
+                EducationWorkComponent={selectedComponents.educationWork.component}
+                ProjectsComponent={selectedComponents.projects.component}
+                UserSkillsComponent={selectedComponents.userSkills.component}
+                personalInfo={personalInfo}
+                education={education}
+                experiences={experiences}
+                projects={projects}
+                userTechnologies={userTechnologies}
+              />
+            )}
           </ScrollArea>
-        </div>
-
-        <ScrollArea className="h-[100%] w-[100%]">
-          {personalInfo && education && experiences && projects && userTechnologies && (
-            <PortfolioPage
-              UserInfoComponent={selectedComponents.userInfo.component}
-              EducationWorkComponent={selectedComponents.educationWork.component}
-              ProjectsComponent={selectedComponents.projects.component}
-              UserSkillsComponent={selectedComponents.userSkills.component}
-              personalInfo={personalInfo}
-              education={education}
-              experiences={experiences}
-              projects={projects}
-              userTechnologies={userTechnologies}
-            />
-          )}
-        </ScrollArea>
-      </main>
-    </div>
+        </main>
+      </div>
   )
+)
 }
